@@ -1,7 +1,7 @@
-# task-management
+# タスク管理アプリ
 
-個人用Trello風タスク管理アプリ。
+個人用 Trello 風タスク管理アプリ。カンバンボード形式でタスクを視覚的に管理できる。
 
 ## ドキュメント
 
-- [要件定義書](docs/requirements.md)
+詳細は [要件定義書](docs/requirements.md) を参照。
