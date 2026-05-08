@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Board</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="app-header">
+    <h1>Task Board</h1>
+  </header>
+
+  <!-- ボード -->
+  <main class="board">
+    <div class="column" id="col-todo">
+      <div class="column-header todo">
+        <h2>未着手</h2>
+        <span class="count" id="count-todo">0</span>
+      </div>
+      <div class="column-sort">
+        <button class="col-sort-btn active" data-col="todo" data-sort="default">登録順</button>
+        <button class="col-sort-btn" data-col="todo" data-sort="priority">優先度順</button>
+        <button class="col-sort-btn" data-col="todo" data-sort="dueDate">期限順</button>
+      </div>
+      <div class="column-body" id="body-todo">
+        <p class="empty-message">タスクがありません</p>
+        <button class="add-card-btn" data-col="todo">＋ タスク追加</button>
+      </div>
+    </div>
+
+    <div class="column" id="col-in-progress">
+      <div class="column-header in-progress">
+        <h2>進行中</h2>
+        <span class="count" id="count-in-progress">0</span>
+      </div>
+      <div class="column-sort">
+        <button class="col-sort-btn active" data-col="in-progress" data-sort="default">登録順</button>
+        <button class="col-sort-btn" data-col="in-progress" data-sort="priority">優先度順</button>
+        <button class="col-sort-btn" data-col="in-progress" data-sort="dueDate">期限順</button>
+      </div>
+      <div class="column-body" id="body-in-progress">
+        <p class="empty-message">タスクがありません</p>
+      </div>
+    </div>
+
+    <div class="column" id="col-done">
+      <div class="column-header done">
+        <h2>完了</h2>
+        <div class="column-header-right">
+          <button class="btn-bulk-delete" id="btn-bulk-delete">全削除</button>
+          <span class="count" id="count-done">0</span>
+        </div>
+      </div>
+      <div class="column-sort">
+        <button class="col-sort-btn active" data-col="done" data-sort="default">登録順</button>
+        <button class="col-sort-btn" data-col="done" data-sort="priority">優先度順</button>
+        <button class="col-sort-btn" data-col="done" data-sort="dueDate">期限順</button>
+      </div>
+      <div class="column-body" id="body-done">
+        <p class="empty-message" id="empty-done">タスクがありません</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- カード追加モーダル -->
+  <div class="overlay" id="overlay-add">
+    <div class="modal">
+      <div class="modal-header"><h4>タスクを追加</h4></div>
+      <div class="modal-body">
+        <label for="add-title">タイトル（必須）</label>
+        <input type="text" id="add-title" placeholder="タイトルを入力">
+        <span class="field-error" id="add-title-error">タイトルを入力してください</span>
+        <label for="add-desc">説明文（任意）</label>
+        <textarea id="add-desc" placeholder="説明を入力"></textarea>
+        <label>優先度</label>
+        <div class="radio-group">
+          <label><input type="radio" name="add-priority" value="high" checked> 高</label>
+          <label><input type="radio" name="add-priority" value="medium"> 中</label>
+          <label><input type="radio" name="add-priority" value="low"> 低</label>
+        </div>
+        <label for="add-due">期限</label>
+        <input type="date" id="add-due">
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="btn-add-cancel">キャンセル</button>
+        <button class="btn-primary" id="btn-add-submit">追加する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- カード詳細・編集モーダル -->
+  <div class="overlay" id="overlay-edit">
+    <div class="modal">
+      <div class="modal-header"><h4>タスク詳細</h4></div>
+      <div class="modal-body">
+        <label for="edit-title">タイトル</label>
+        <input type="text" id="edit-title">
+        <span class="field-error" id="edit-title-error">タイトルを入力してください</span>
+        <label for="edit-desc">説明文</label>
+        <textarea id="edit-desc"></textarea>
+        <label>優先度</label>
+        <div class="radio-group">
+          <label><input type="radio" name="edit-priority" value="high"> 高</label>
+          <label><input type="radio" name="edit-priority" value="medium"> 中</label>
+          <label><input type="radio" name="edit-priority" value="low"> 低</label>
+        </div>
+        <label for="edit-due">期限</label>
+        <input type="date" id="edit-due">
+      </div>
+      <div class="modal-footer three-buttons">
+        <button class="btn-danger" id="btn-edit-delete">削除する</button>
+        <div>
+          <button class="btn-cancel" id="btn-edit-cancel">キャンセル</button>
+          <button class="btn-primary" id="btn-edit-save">保存する</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 削除確認ダイアログ -->
+  <div class="overlay" id="overlay-delete">
+    <div class="modal dialog">
+      <div class="modal-body center">
+        <p>本当に削除しますか？</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="btn-delete-cancel">キャンセル</button>
+        <button class="btn-danger" id="btn-delete-confirm">はい</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
