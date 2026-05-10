@@ -2,15 +2,34 @@
 
 ## 1. 使用技術一覧
 
+### フロントエンド
+
 | 役割 | 使用技術 |
 |------|---------|
-| フロントエンド | React + TypeScript |
+| UI フレームワーク | React + TypeScript |
 | ビルドツール | Vite |
 | スタイリング | Tailwind CSS |
 | ドラッグ＆ドロップ | @dnd-kit/core |
-| バックエンド | Java / Spring Boot |
-| データベース | PostgreSQL（または H2） |
-| API 通信 | REST API |
+| HTTP クライアント | axios |
+
+### バックエンド
+
+| 役割 | 使用技術 |
+|------|---------|
+| 言語 / フレームワーク | Java 21 / Spring Boot 3.x |
+| ビルドツール | Gradle (Groovy DSL) |
+| REST API | Spring Web |
+| DB アクセス | Spring Data JPA |
+| バリデーション | Spring Boot Validation |
+| DB ドライバ | PostgreSQL Driver |
+| コード省力化 | Lombok |
+
+### データベース・開発環境
+
+| 役割 | 使用技術 |
+|------|---------|
+| データベース | PostgreSQL |
+| ローカル DB 起動 | Docker / Docker Compose |
 
 ---
 
