@@ -88,6 +88,8 @@ function buildCard(task) {
   card.addEventListener("dragover", (e) => {
     e.preventDefault();
     if (!draggedId || draggedId === task.id) return;
+    // ソート中は同一列内の並び替えインジケーターを表示しない
+    if (sortOrders[task.status] !== "default") return;
     clearDropIndicators();
     const rect = card.getBoundingClientRect();
     if (e.clientY < rect.top + rect.height / 2) {
@@ -109,9 +111,20 @@ function buildCard(task) {
     const draggedTask = tasks.find(t => t.id === draggedId);
     if (!draggedTask) return;
 
+    const targetCol = task.status;
+    if (sortOrders[targetCol] !== "default") {
+      // ソート中は列間の移動のみ許可（同一列内の並び替えは無効）
+      if (draggedTask.status !== targetCol) {
+        draggedTask.status = targetCol;
+        render();
+      }
+      return;
+    }
+
+    // 登録順のときは位置を指定してドロップ
     const rect = card.getBoundingClientRect();
     const isAbove = e.clientY < rect.top + rect.height / 2;
-    draggedTask.status = task.status;
+    draggedTask.status = targetCol;
     const fromIndex = tasks.indexOf(draggedTask);
     tasks.splice(fromIndex, 1);
     const toIndex = tasks.indexOf(task);
