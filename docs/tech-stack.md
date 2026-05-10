@@ -11,6 +11,7 @@
 | スタイリング | Tailwind CSS |
 | ドラッグ＆ドロップ | @dnd-kit/core |
 | HTTP クライアント | axios |
+| パッケージ管理 | npm |
 
 ### バックエンド
 
@@ -30,6 +31,7 @@
 |------|---------|
 | データベース | PostgreSQL |
 | ローカル DB 起動 | Docker / Docker Compose |
+| バージョン管理 | Git + GitHub |
 
 ---
 
