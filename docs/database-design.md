@@ -30,5 +30,6 @@ erDiagram
 | priority | VARCHAR(10) | 可 | NULL | 優先度：`HIGH` / `MEDIUM` / `LOW` |
 | due_date | DATE | 可 | NULL | 期限日 |
 | status | VARCHAR(20) | 不可 | `TODO` | ステータス：`TODO` / `IN_PROGRESS` / `DONE` |
+| position | INT | 不可 | `0` | カラム内の表示順序 |
 | created_at | DATETIME | 不可 | 現在日時 | レコード作成日時（内部管理用・画面には表示しない） |
 | updated_at | DATETIME | 不可 | 現在日時 | レコード更新日時（内部管理用・画面には表示しない） |
