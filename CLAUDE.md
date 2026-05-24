@@ -1,4 +1,10 @@
-# CLAUDE.md — タスク管理アプリ 開発ルール
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+# タスク管理アプリ 開発ルール
 
 > このファイルに定義されたルールは Claude Code が**必ず守る**規約です。
 > 例外なく適用し、違反する操作は行わないでください。
@@ -92,3 +98,93 @@
 
 - 他のアプリとポートが衝突する場合は必ずチームに確認すること
 - ポート番号を変更する場合は docker-compose.yml と application.yml の両方を更新すること
+
+---
+
+## 8. 開発環境の起動コマンド
+
+### 全サービス起動手順（毎回この順序で）
+
+```bash
+# 1. DB 起動（初回・再起動時）
+docker compose up -d
+
+# 2. バックエンド起動
+cd backend
+./gradlew bootRun
+
+# 3. フロントエンド起動（別ターミナル）
+cd frontend
+npm run dev
+```
+
+### バックエンド単体操作
+
+```bash
+cd backend
+./gradlew build          # ビルド（テスト含む）
+./gradlew test           # テストのみ実行
+./gradlew bootRun        # 起動（ポート 8080）
+```
+
+### DB 操作
+
+```bash
+docker compose up -d     # 起動
+docker compose down      # 停止（データは保持）
+docker compose down -v   # 停止＋データ削除（初期化したいとき）
+```
+
+---
+
+## 9. アーキテクチャ概要
+
+```
+task-management/
+├── backend/          # Spring Boot REST API（ポート 8080）
+├── frontend/         # React + TypeScript（ポート 5173）
+├── docs/             # 要件・設計ドキュメント
+├── prototype/        # Vanilla JS の試作UI（参照用。本番実装ではない）
+└── docker-compose.yml  # PostgreSQL のみ定義
+```
+
+### バックエンド層構成
+
+```
+controller → service → repository → DB
+```
+
+- **controller**: HTTP リクエストを受け取り、service を呼ぶ。パスパラメータ型は Enum を直接受け取る（Spring が自動変換）
+- **service**: ビジネスロジック。現状は repository の薄いラッパー
+- **repository**: Spring Data JPA。カスタムメソッドは `findByStatusOrderByPositionAsc(TaskStatus)` のみ
+- **entity**: `Task.java` — status は `TaskStatus` Enum、priority は `TaskPriority` Enum で管理。`@Enumerated(EnumType.STRING)` により DB には文字列で保存
+
+### Enum 型
+
+| フィールド | 型 | 値 |
+|---|---|---|
+| status | `TaskStatus` | `TODO` / `IN_PROGRESS` / `DONE` |
+| priority | `TaskPriority` | `HIGH` / `MEDIUM` / `LOW` |
+
+### フロントエンド構成
+
+```
+App.tsx
+└── components/
+    ├── Header.tsx     # タイトルバー
+    ├── Board.tsx      # データ取得・状態管理（useEffect + useState）
+    ├── Column.tsx     # カラム（未着手 / 進行中 / 完了）
+    └── TaskCard.tsx   # タスクカード1枚
+```
+
+- `src/api/taskApi.ts` — `/api/tasks` へのリクエスト（fetch ベース）
+- `src/types/Task.ts` — バックエンド Entity に対応する TypeScript 型
+- CORS は `vite.config.ts` の `server.proxy` で回避（バックエンド変更不要）
+
+### 現在実装済みの API エンドポイント
+
+| メソッド | URL | 内容 |
+|---|---|---|
+| GET | `/api/tasks` | 全タスク取得 |
+| GET | `/api/tasks/{id}` | ID 指定取得 |
+| GET | `/api/tasks/status/{status}` | ステータス絞り込み |
