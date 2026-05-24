@@ -1,6 +1,7 @@
 package com.taskmanagement.service;
 
 import com.taskmanagement.entity.Task;
+import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -23,7 +24,7 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
-    public List<Task> findByStatus(String status) {
+    public List<Task> findByStatus(TaskStatus status) {
         return taskRepository.findByStatusOrderByPositionAsc(status);
     }
 }

@@ -1,6 +1,7 @@
 package com.taskmanagement.controller;
 
 import com.taskmanagement.entity.Task;
+import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.service.TaskService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class TaskController {
     }
 
     @GetMapping("/status/{status}")
-    public List<Task> getTasksByStatus(@PathVariable String status) {
+    public List<Task> getTasksByStatus(@PathVariable TaskStatus status) {
         return taskService.findByStatus(status);
     }
 }
