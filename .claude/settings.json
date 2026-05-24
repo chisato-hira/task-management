@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "Read",
       "Edit",
@@ -65,7 +64,11 @@
       "Bash(env:*)",
       "Bash(export:*)",
       "Bash(set:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(./gradlew bootRun)",
+      "Bash(git -C /Users/chisatohirabayashi/Documents/cursor-projects/task-management push -u origin refactor/#12-convert-status-priority-to-enum)",
+      "Bash(gradle --version)",
+      "Bash(psql --version)"
     ],
     "deny": [
       "Bash(rm :*)",
@@ -85,6 +88,7 @@
       "Bash(taskkill:*)",
       "Bash(shutdown:*)",
       "Bash(reboot:*)"
-    ]
+    ],
+    "defaultMode": "acceptEdits"
   }
 }
