@@ -2,36 +2,47 @@
 
 ## 1. 使用技術一覧
 
-### フロントエンド
+### 1-1. フロントエンド
 
-| 役割 | 使用技術 |
-|------|---------|
-| UI フレームワーク | React + TypeScript |
-| ビルドツール | Vite |
-| スタイリング | Tailwind CSS |
-| ドラッグ＆ドロップ | @dnd-kit/core |
-| HTTP クライアント | axios |
-| パッケージ管理 | npm |
+| 役割 | 技術 | バージョン | 備考 |
+|------|------|-----------|------|
+| UI ライブラリ | React | 19.2.6 | |
+| 言語 | TypeScript | 6.0.3 | |
+| ビルドツール | Vite | 8.0.14 | |
+| スタイリング | Tailwind CSS | 4.3.0 | |
+| React プラグイン | @vitejs/plugin-react | 6.0.2 | Vite と合わせて使用 |
+| ドラッグ＆ドロップ | @dnd-kit/core | 未導入 | タスク移動機能で使用予定 |
+| HTTP クライアント | fetch API | ブラウザ標準 | 外部ライブラリ不要 |
+| パッケージ管理 | npm | 11.11.0 | |
 
-### バックエンド
+### 1-2. バックエンド
 
-| 役割 | 使用技術 |
-|------|---------|
-| 言語 / フレームワーク | Java 21 / Spring Boot 3.x |
-| ビルドツール | Gradle (Groovy DSL) |
-| REST API | Spring Web |
-| DB アクセス | Spring Data JPA |
-| バリデーション | Spring Boot Validation |
-| DB ドライバ | PostgreSQL Driver |
-| コード省力化 | Lombok |
+| 役割 | 技術 | バージョン | 備考 |
+|------|------|-----------|------|
+| 言語 | Java | 25 | |
+| フレームワーク | Spring Boot | 4.0.3 | |
+| ビルドツール | Gradle（Kotlin DSL） | 9.4.1 | build.gradle.kts で管理 |
+| REST API | Spring Web MVC | Spring Boot 管理 | |
+| DB アクセス | Spring Data JPA | Spring Boot 管理 | |
+| バリデーション | Spring Boot Validation | Spring Boot 管理 | |
+| DB ドライバ | PostgreSQL Driver | Spring Boot 管理 | |
+| コード省力化 | Lombok | Spring Boot 管理 | ボイラープレート削減 |
 
-### データベース・開発環境
+> Spring Boot 管理：Spring Boot の BOM（部品表）によって自動的にバージョンが決まるため、個別指定不要。
 
-| 役割 | 使用技術 |
-|------|---------|
-| データベース | PostgreSQL |
-| ローカル DB 起動 | Docker / Docker Compose |
-| バージョン管理 | Git + GitHub |
+### 1-3. データベース
+
+| 役割 | 技術 | バージョン | 備考 |
+|------|------|-----------|------|
+| RDBMS | PostgreSQL | 17 | Docker で起動（ポート 5432） |
+
+### 1-4. 開発ツール・インフラ
+
+| 役割 | 技術 | バージョン | 備考 |
+|------|------|-----------|------|
+| ローカル DB 起動 | Docker / Docker Compose | — | docker-compose.yml で定義 |
+| バージョン管理 | Git | — | |
+| リモートリポジトリ | GitHub | — | PR・Issue でチーム開発管理 |
 
 ---
 
