@@ -27,4 +27,8 @@ public class TaskService {
     public List<Task> findByStatus(TaskStatus status) {
         return taskRepository.findByStatusOrderByPositionAsc(status);
     }
+
+    public Task save(Task task) {
+        return taskRepository.save(task);
+    }
 }
