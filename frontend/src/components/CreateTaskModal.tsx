@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import type { TaskPriority } from '../types/Task'
+import { createTask } from '../api/taskApi'
 
 interface CreateTaskModalProps {
   onClose: () => void
+  onCreated: () => void
 }
 
 interface FormValues {
@@ -18,18 +20,33 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
   { value: 'LOW',    label: '低' },
 ]
 
-export default function CreateTaskModal({ onClose }: CreateTaskModalProps) {
+export default function CreateTaskModal({ onClose, onCreated }: CreateTaskModalProps) {
   const [values, setValues] = useState<FormValues>({
     title: '',
     description: '',
     priority: '',
     dueDate: '',
   })
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // TODO: バックエンド連携時にここでAPIを呼び出す
-    onClose()
+    setSubmitting(true)
+    setError(null)
+    try {
+      await createTask({
+        title: values.title,
+        description: values.description || null,
+        priority: values.priority || null,
+        dueDate: values.dueDate || null,
+      })
+      onCreated()
+    } catch {
+      setError('タスクの作成に失敗しました。バックエンドが起動しているか確認してください。')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -101,20 +118,25 @@ export default function CreateTaskModal({ onClose }: CreateTaskModalProps) {
             </div>
           </div>
 
+          {error && (
+            <p className="text-sm text-red-500">{error}</p>
+          )}
+
           <div className="flex justify-end gap-3 mt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              disabled={submitting}
+              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
             >
               キャンセル
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:opacity-40"
-              disabled={values.title.trim() === ''}
+              disabled={values.title.trim() === '' || submitting}
             >
-              作成する
+              {submitting ? '作成中...' : '作成する'}
             </button>
           </div>
         </form>
