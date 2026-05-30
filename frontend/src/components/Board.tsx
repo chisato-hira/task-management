@@ -73,7 +73,10 @@ export default function Board() {
       </div>
 
       {isModalOpen && (
-        <CreateTaskModal onClose={() => setIsModalOpen(false)} />
+        <CreateTaskModal
+          onClose={() => setIsModalOpen(false)}
+          onCreated={() => { setIsModalOpen(false); load() }}
+        />
       )}
     </>
   )
