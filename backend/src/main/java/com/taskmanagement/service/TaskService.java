@@ -1,5 +1,6 @@
 package com.taskmanagement.service;
 
+import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.repository.TaskRepository;
@@ -31,4 +32,14 @@ public class TaskService {
     public Task save(Task task) {
         return taskRepository.save(task);
     }
+
+    public Optional<Task> update(Long id, UpdateTaskRequest request) {
+        return taskRepository.findById(id).map(task -> {
+            task.setStatus(request.getStatus());
+            task.setPriority(request.getPriority());
+            task.setDueDate(request.getDueDate());
+            return taskRepository.save(task);
+        });
+    }
+
 }

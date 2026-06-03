@@ -1,4 +1,4 @@
-import type { Task, TaskPriority } from '../types/Task'
+import type { Task, TaskPriority, TaskStatus } from '../types/Task'
 
 export async function fetchTasks(): Promise<Task[]> {
   const response = await fetch('/api/tasks')
@@ -26,3 +26,22 @@ export async function createTask(request: CreateTaskRequest): Promise<Task> {
   }
   return response.json()
 }
+
+export interface UpdateTaskRequest {
+  status: TaskStatus
+  priority: TaskPriority | null
+  dueDate: string | null
+}
+
+export async function updateTask(id: number, request: UpdateTaskRequest): Promise<Task> {
+  const response = await fetch(`/api/tasks/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  if (!response.ok) {
+    throw new Error('タスクの更新に失敗しました')
+  }
+  return response.json()
+}
+
