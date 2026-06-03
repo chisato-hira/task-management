@@ -87,7 +87,6 @@ export default function Board() {
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
           onUpdated={() => { setSelectedTask(null); load() }}
-          onDeleted={() => { setSelectedTask(null); load() }}
         />
       )}
     </>

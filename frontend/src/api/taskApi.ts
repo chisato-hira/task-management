@@ -45,11 +45,3 @@ export async function updateTask(id: number, request: UpdateTaskRequest): Promis
   return response.json()
 }
 
-export async function deleteTask(id: number): Promise<void> {
-  const response = await fetch(`/api/tasks/${id}`, {
-    method: 'DELETE',
-  })
-  if (!response.ok) {
-    throw new Error('タスクの削除に失敗しました')
-  }
-}

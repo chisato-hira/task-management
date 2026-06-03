@@ -42,11 +42,4 @@ public class TaskService {
         });
     }
 
-    public boolean delete(Long id) {
-        if (!taskRepository.existsById(id)) {
-            return false;
-        }
-        taskRepository.deleteById(id);
-        return true;
-    }
 }

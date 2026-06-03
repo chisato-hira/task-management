@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import type { Task, TaskStatus, TaskPriority } from '../types/Task'
-import { updateTask, deleteTask } from '../api/taskApi'
+import { updateTask } from '../api/taskApi'
 
 interface TaskDetailModalProps {
   task: Task
   onClose: () => void
   onUpdated: () => void
-  onDeleted: () => void
 }
 
 const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
@@ -27,16 +26,14 @@ interface FormValues {
   dueDate: string
 }
 
-export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }: TaskDetailModalProps) {
+export default function TaskDetailModal({ task, onClose, onUpdated }: TaskDetailModalProps) {
   const [values, setValues] = useState<FormValues>({
     status:   task.status,
     priority: task.priority ?? '',
     dueDate:  task.dueDate ?? '',
   })
-  const [saving, setSaving]   = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [error, setError]     = useState<string | null>(null)
-  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState<string | null>(null)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -63,21 +60,6 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
     }
   }
 
-  const handleDelete = async () => {
-    setDeleting(true)
-    setError(null)
-    try {
-      await deleteTask(task.id)
-      onDeleted()
-    } catch {
-      setError('削除に失敗しました。バックエンドが起動しているか確認してください。')
-      setDeleting(false)
-      setConfirmDelete(false)
-    }
-  }
-
-  const isProcessing = saving || deleting
-
   return (
     <div
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
@@ -99,7 +81,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
             <select
               value={values.status}
               onChange={e => setValues({ ...values, status: e.target.value as TaskStatus })}
-              disabled={isProcessing}
+              disabled={saving}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white disabled:opacity-50"
             >
               {STATUS_OPTIONS.map(opt => (
@@ -113,7 +95,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
             <select
               value={values.priority}
               onChange={e => setValues({ ...values, priority: e.target.value as TaskPriority | '' })}
-              disabled={isProcessing}
+              disabled={saving}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white disabled:opacity-50"
             >
               <option value="">未設定</option>
@@ -129,7 +111,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
               type="date"
               value={values.dueDate}
               onChange={e => setValues({ ...values, dueDate: e.target.value })}
-              disabled={isProcessing}
+              disabled={saving}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50"
             />
           </div>
@@ -139,53 +121,22 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
           <p className="text-sm text-red-500 mt-3">{error}</p>
         )}
 
-        {confirmDelete ? (
-          <div className="mt-5 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-700 mb-3">本当に削除しますか？この操作は元に戻せません。</p>
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setConfirmDelete(false)}
-                disabled={isProcessing}
-                className="px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
-              >
-                やめる
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isProcessing}
-                className="px-3 py-1.5 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-40"
-              >
-                {deleting ? '削除中...' : '削除する'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="flex justify-between items-center mt-5">
-            <button
-              onClick={() => setConfirmDelete(true)}
-              disabled={isProcessing}
-              className="px-3 py-1.5 text-sm text-red-500 border border-red-300 rounded-lg hover:bg-red-50 disabled:opacity-40"
-            >
-              削除
-            </button>
-            <div className="flex gap-3">
-              <button
-                onClick={onClose}
-                disabled={isProcessing}
-                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={isProcessing}
-                className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:opacity-40"
-              >
-                {saving ? '保存中...' : '保存する'}
-              </button>
-            </div>
-          </div>
-        )}
+        <div className="flex justify-end gap-3 mt-5">
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
+          >
+            キャンセル
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:opacity-40"
+          >
+            {saving ? '保存中...' : '保存する'}
+          </button>
+        </div>
       </div>
     </div>
   )
