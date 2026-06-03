@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import type { Task } from '../types/Task'
 
 interface TaskCardProps {
@@ -39,9 +41,24 @@ const dueDateConfig = {
 export default function TaskCard({ task, onClick }: TaskCardProps) {
   const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+    data: { task },
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  }
+
   return (
     <div
-      className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-shadow"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing hover:border-indigo-300 hover:shadow-md transition-shadow"
       onClick={() => onClick(task)}
     >
       <p className="text-sm font-medium text-gray-800">{task.title}</p>
