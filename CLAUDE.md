@@ -58,6 +58,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **main ブランチへの直接 push は絶対に禁止**
 - 必ずブランチを切って作業し、PR 経由でマージすること
 - GitHub のブランチ保護ルールでも強制設定済み
+- **変更の種類に関わらず例外はない**（アプリのコード・CLAUDE.md・スキルファイルすべて同じフローで行うこと）
+
+### すべての変更に適用するフロー
+
+```
+Issue作成 → ブランチ作成 → 実装・コミット・プッシュ → PR確認 → マージ
+```
 
 ---
 
