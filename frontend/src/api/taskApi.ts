@@ -11,6 +11,7 @@ export async function fetchTasks(): Promise<Task[]> {
 export interface CreateTaskRequest {
   title: string
   description: string | null
+  status: TaskStatus
   priority: TaskPriority | null
   dueDate: string | null
 }
