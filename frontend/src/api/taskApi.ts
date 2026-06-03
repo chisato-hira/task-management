@@ -29,6 +29,8 @@ export async function createTask(request: CreateTaskRequest): Promise<Task> {
 }
 
 export interface UpdateTaskRequest {
+  title: string
+  description: string | null
   status: TaskStatus
   priority: TaskPriority | null
   dueDate: string | null

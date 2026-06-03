@@ -35,6 +35,8 @@ public class TaskService {
 
     public Optional<Task> update(Long id, UpdateTaskRequest request) {
         return taskRepository.findById(id).map(task -> {
+            if (request.getTitle() != null) task.setTitle(request.getTitle());
+            if (request.getDescription() != null) task.setDescription(request.getDescription());
             task.setStatus(request.getStatus());
             task.setPriority(request.getPriority());
             task.setDueDate(request.getDueDate());
