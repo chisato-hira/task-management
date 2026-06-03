@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  closestCorners,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -12,7 +13,6 @@ import { arrayMove } from '@dnd-kit/sortable'
 import type { Task, ColumnDef, TaskStatus } from '../types/Task'
 import { fetchTasks, reorderTasks } from '../api/taskApi'
 import Column from './Column'
-import TaskCard from './TaskCard'
 import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
 
@@ -29,6 +29,7 @@ export default function Board() {
   const [addingToStatus, setAddingToStatus] = useState<TaskStatus | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const originalTasksRef = useRef<Task[]>([])
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 5 },
@@ -52,69 +53,68 @@ export default function Board() {
   }, [])
 
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find(t => t.id === event.active.id)
-    if (task) setActiveTask(task)
+    const task = tasks.find(t => t.id === Number(event.active.id))
+    if (task) {
+      setActiveTask(task)
+      originalTasksRef.current = tasks
+    }
   }
 
   const handleDragEnd = async (event: DragEndEvent) => {
     setActiveTask(null)
     const { active, over } = event
-    if (!over) return
 
-    const activeId = active.id as number
-    const overId = over.id
-
-    const activeTask = tasks.find(t => t.id === activeId)
-    if (!activeTask) return
-
-    // ドロップ先のステータスを特定（カラムIDかタスクIDかを判定）
-    const overTask = tasks.find(t => t.id === overId)
-    const targetStatus: TaskStatus = overTask
-      ? overTask.status
-      : (overId as TaskStatus)
-
-    let updatedTasks = [...tasks]
-
-    if (activeTask.status === targetStatus) {
-      // 同一カラム内の並び替え
-      const columnTasks = updatedTasks.filter(t => t.status === targetStatus)
-      const oldIndex = columnTasks.findIndex(t => t.id === activeId)
-      const newIndex = overTask ? columnTasks.findIndex(t => t.id === overId) : columnTasks.length - 1
-
-      if (oldIndex === newIndex) return
-
-      const reordered = arrayMove(columnTasks, oldIndex, newIndex)
-      updatedTasks = updatedTasks
-        .filter(t => t.status !== targetStatus)
-        .concat(reordered.map((t, i) => ({ ...t, position: i })))
-    } else {
-      // カラム間の移動
-      const targetColumnTasks = updatedTasks
-        .filter(t => t.status === targetStatus && t.id !== activeId)
-      const insertIndex = overTask
-        ? targetColumnTasks.findIndex(t => t.id === overId)
-        : targetColumnTasks.length
-
-      const newTask = { ...activeTask, status: targetStatus }
-      targetColumnTasks.splice(insertIndex === -1 ? targetColumnTasks.length : insertIndex, 0, newTask)
-
-      updatedTasks = updatedTasks
-        .filter(t => t.id !== activeId && t.status !== targetStatus)
-        .concat(
-          updatedTasks.filter(t => t.status === activeTask.status && t.id !== activeId)
-            .map((t, i) => ({ ...t, position: i }))
-        )
-        .concat(targetColumnTasks.map((t, i) => ({ ...t, position: i })))
+    if (!over) {
+      setTasks(originalTasksRef.current)
+      return
     }
 
-    setTasks(updatedTasks)
+    const activeId = Number(active.id)
+    const overIdAsNumber = Number(over.id)
+    const overTask = isNaN(overIdAsNumber) ? null : originalTasksRef.current.find(t => t.id === overIdAsNumber)
+    const targetStatus: TaskStatus = overTask ? overTask.status : (over.id as TaskStatus)
+    const originalTask = originalTasksRef.current.find(t => t.id === activeId)
+    if (!originalTask) return
 
-    // APIに送信
-    const payload = updatedTasks.map(t => ({ id: t.id, status: t.status, position: t.position }))
+    let finalTasks: Task[]
+
+    if (originalTask.status === targetStatus) {
+      // 同一カラム内の並び替え
+      const colTasks = originalTasksRef.current.filter(t => t.status === targetStatus)
+      const oldIdx = colTasks.findIndex(t => t.id === activeId)
+      const newIdx = overTask
+        ? colTasks.findIndex(t => t.id === overTask.id)
+        : colTasks.length - 1
+      if (oldIdx === -1 || newIdx === -1 || oldIdx === newIdx) {
+        setTasks(originalTasksRef.current)
+        return
+      }
+
+      const reordered = arrayMove(colTasks, oldIdx, newIdx).map((t, i) => ({ ...t, position: i }))
+      finalTasks = [...originalTasksRef.current.filter(t => t.status !== targetStatus), ...reordered]
+    } else {
+      // カラム間の移動：ターゲットカラムの末尾に追加する
+      const sourceTasks = originalTasksRef.current
+        .filter(t => t.status === originalTask.status && t.id !== activeId)
+        .map((t, i) => ({ ...t, position: i }))
+
+      const destTasks = originalTasksRef.current.filter(t => t.status === targetStatus)
+      const movedTask = { ...originalTask, status: targetStatus, position: destTasks.length }
+
+      finalTasks = [
+        ...originalTasksRef.current.filter(t => t.status !== originalTask.status && t.status !== targetStatus),
+        ...sourceTasks,
+        ...destTasks,
+        movedTask,
+      ]
+    }
+
+    setTasks(finalTasks)
+
     try {
-      await reorderTasks(payload)
+      await reorderTasks(finalTasks.map(t => ({ id: t.id, status: t.status, position: t.position })))
     } catch {
-      load() // 失敗時は再取得してロールバック
+      setTasks(originalTasksRef.current)
     }
   }
 
@@ -137,7 +137,7 @@ export default function Board() {
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex gap-4">
         {COLUMNS.map(col => (
           <Column
@@ -152,7 +152,9 @@ export default function Board() {
 
       <DragOverlay>
         {activeTask && (
-          <TaskCard task={activeTask} onClick={() => {}} />
+          <div className="bg-white rounded-lg p-3 shadow-lg border border-indigo-300 opacity-90 cursor-grabbing">
+            <p className="text-sm font-medium text-gray-800">{activeTask.title}</p>
+          </div>
         )}
       </DragOverlay>
 
