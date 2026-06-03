@@ -1,5 +1,6 @@
 package com.taskmanagement.controller;
 
+import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.service.TaskService;
@@ -39,5 +40,20 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         Task saved = taskService.save(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
+        return taskService.update(id, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        if (!taskService.delete(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }

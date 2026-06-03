@@ -2,6 +2,7 @@ import type { Task } from '../types/Task'
 
 interface TaskCardProps {
   task: Task
+  onClick: (task: Task) => void
 }
 
 const priorityConfig = {
@@ -15,9 +16,12 @@ function formatDate(dateStr: string): string {
   return `${parseInt(parts[1])}/${parseInt(parts[2])}`
 }
 
-export default function TaskCard({ task }: TaskCardProps) {
+export default function TaskCard({ task, onClick }: TaskCardProps) {
   return (
-    <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+    <div
+      className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-shadow"
+      onClick={() => onClick(task)}
+    >
       <p className="text-sm font-medium text-gray-800">{task.title}</p>
       <div className="flex items-center gap-2 mt-2">
         {task.priority && (

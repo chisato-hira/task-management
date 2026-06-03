@@ -4,9 +4,10 @@ import TaskCard from './TaskCard'
 interface ColumnProps {
   columnDef: ColumnDef
   tasks: Task[]
+  onTaskClick: (task: Task) => void
 }
 
-export default function Column({ columnDef, tasks }: ColumnProps) {
+export default function Column({ columnDef, tasks, onTaskClick }: ColumnProps) {
   return (
     <div className="flex-1 bg-gray-100 rounded-xl p-3 min-w-0">
       <div className="flex items-center gap-2 mb-3">
@@ -20,7 +21,7 @@ export default function Column({ columnDef, tasks }: ColumnProps) {
         {tasks.length === 0 ? (
           <p className="text-xs text-gray-400 text-center py-4">タスクがありません</p>
         ) : (
-          tasks.map(task => <TaskCard key={task.id} task={task} />)
+          tasks.map(task => <TaskCard key={task.id} task={task} onClick={onTaskClick} />)
         )}
       </div>
     </div>

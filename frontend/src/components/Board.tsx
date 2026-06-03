@@ -3,6 +3,7 @@ import type { Task, ColumnDef } from '../types/Task'
 import { fetchTasks } from '../api/taskApi'
 import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
+import TaskDetailModal from './TaskDetailModal'
 
 const COLUMNS: ColumnDef[] = [
   { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-500' },
@@ -15,6 +16,7 @@ export default function Board() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   const load = async () => {
     setLoading(true)
@@ -68,6 +70,7 @@ export default function Board() {
             key={col.status}
             columnDef={col}
             tasks={tasks.filter(t => t.status === col.status)}
+            onTaskClick={setSelectedTask}
           />
         ))}
       </div>
@@ -76,6 +79,15 @@ export default function Board() {
         <CreateTaskModal
           onClose={() => setIsModalOpen(false)}
           onCreated={() => { setIsModalOpen(false); load() }}
+        />
+      )}
+
+      {selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onUpdated={() => { setSelectedTask(null); load() }}
+          onDeleted={() => { setSelectedTask(null); load() }}
         />
       )}
     </>
