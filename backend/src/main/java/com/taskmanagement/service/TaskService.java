@@ -1,10 +1,12 @@
 package com.taskmanagement.service;
 
+import com.taskmanagement.dto.ReorderTaskRequest;
 import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +33,17 @@ public class TaskService {
 
     public Task save(Task task) {
         return taskRepository.save(task);
+    }
+
+    @Transactional
+    public void reorder(List<ReorderTaskRequest> requests) {
+        for (ReorderTaskRequest req : requests) {
+            taskRepository.findById(req.getId()).ifPresent(task -> {
+                task.setStatus(req.getStatus());
+                task.setPosition(req.getPosition());
+                taskRepository.save(task);
+            });
+        }
     }
 
     public Optional<Task> update(Long id, UpdateTaskRequest request) {

@@ -48,3 +48,20 @@ export async function updateTask(id: number, request: UpdateTaskRequest): Promis
   return response.json()
 }
 
+export interface ReorderTaskRequest {
+  id: number
+  status: TaskStatus
+  position: number
+}
+
+export async function reorderTasks(requests: ReorderTaskRequest[]): Promise<void> {
+  const response = await fetch('/api/tasks/reorder', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requests),
+  })
+  if (!response.ok) {
+    throw new Error('並び替えに失敗しました')
+  }
+}
+

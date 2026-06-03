@@ -1,5 +1,6 @@
 package com.taskmanagement.controller;
 
+import com.taskmanagement.dto.ReorderTaskRequest;
 import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.entity.TaskStatus;
@@ -40,6 +41,12 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         Task saved = taskService.save(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    }
+
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderTasks(@RequestBody List<ReorderTaskRequest> requests) {
+        taskService.reorder(requests);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
