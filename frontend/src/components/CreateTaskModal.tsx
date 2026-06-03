@@ -1,18 +1,26 @@
 import { useState } from 'react'
-import type { TaskPriority } from '../types/Task'
+import type { TaskPriority, TaskStatus } from '../types/Task'
 import { createTask } from '../api/taskApi'
 
 interface CreateTaskModalProps {
   onClose: () => void
   onCreated: () => void
+  defaultStatus?: TaskStatus
 }
 
 interface FormValues {
   title: string
   description: string
+  status: TaskStatus
   priority: TaskPriority | ''
   dueDate: string
 }
+
+const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
+  { value: 'TODO',        label: '未着手' },
+  { value: 'IN_PROGRESS', label: '進行中' },
+  { value: 'DONE',        label: '完了'   },
+]
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
   { value: 'HIGH',   label: '高' },
@@ -20,10 +28,11 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
   { value: 'LOW',    label: '低' },
 ]
 
-export default function CreateTaskModal({ onClose, onCreated }: CreateTaskModalProps) {
+export default function CreateTaskModal({ onClose, onCreated, defaultStatus = 'TODO' }: CreateTaskModalProps) {
   const [values, setValues] = useState<FormValues>({
     title: '',
     description: '',
+    status: defaultStatus,
     priority: '',
     dueDate: '',
   })
@@ -38,6 +47,7 @@ export default function CreateTaskModal({ onClose, onCreated }: CreateTaskModalP
       await createTask({
         title: values.title,
         description: values.description || null,
+        status: values.status,
         priority: values.priority || null,
         dueDate: values.dueDate || null,
       })
@@ -86,6 +96,19 @@ export default function CreateTaskModal({ onClose, onCreated }: CreateTaskModalP
               rows={3}
               placeholder="タスクの詳細を入力（任意）"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">ステータス</label>
+            <select
+              value={values.status}
+              onChange={e => setValues({ ...values, status: e.target.value as TaskStatus })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+            >
+              {STATUS_OPTIONS.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
           </div>
 
           <div className="flex gap-4">

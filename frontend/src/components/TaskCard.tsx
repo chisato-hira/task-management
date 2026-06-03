@@ -16,7 +16,29 @@ function formatDate(dateStr: string): string {
   return `${parseInt(parts[1])}/${parseInt(parts[2])}`
 }
 
+function getDueDateStatus(dueDate: string): 'overdue' | 'soon' | null {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const due = new Date(dueDate)
+  due.setHours(0, 0, 0, 0)
+
+  if (due < today) return 'overdue'
+
+  const threeDaysLater = new Date(today)
+  threeDaysLater.setDate(today.getDate() + 3)
+  if (due <= threeDaysLater) return 'soon'
+
+  return null
+}
+
+const dueDateConfig = {
+  overdue: { badge: '期限切れ', className: 'bg-red-100 text-red-700' },
+  soon:    { badge: 'まもなく期限', className: 'bg-yellow-100 text-yellow-700' },
+}
+
 export default function TaskCard({ task, onClick }: TaskCardProps) {
+  const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate) : null
+
   return (
     <div
       className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-pointer hover:border-indigo-300 hover:shadow-md transition-shadow"
@@ -30,7 +52,13 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
           </span>
         )}
         {task.dueDate && (
-          <span className="text-xs text-gray-400">{formatDate(task.dueDate)}</span>
+          dueDateStatus ? (
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dueDateConfig[dueDateStatus].className}`}>
+              {dueDateConfig[dueDateStatus].badge}　{formatDate(task.dueDate)}
+            </span>
+          ) : (
+            <span className="text-xs text-gray-400">{formatDate(task.dueDate)}</span>
+          )
         )}
       </div>
     </div>

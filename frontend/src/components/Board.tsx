@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Task, ColumnDef } from '../types/Task'
+import type { Task, ColumnDef, TaskStatus } from '../types/Task'
 import { fetchTasks } from '../api/taskApi'
 import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
@@ -16,6 +16,7 @@ export default function Board() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [addingToStatus, setAddingToStatus] = useState<TaskStatus | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
   const load = async () => {
@@ -71,6 +72,7 @@ export default function Board() {
             columnDef={col}
             tasks={tasks.filter(t => t.status === col.status)}
             onTaskClick={setSelectedTask}
+            onAddClick={() => setAddingToStatus(col.status)}
           />
         ))}
       </div>
@@ -79,6 +81,14 @@ export default function Board() {
         <CreateTaskModal
           onClose={() => setIsModalOpen(false)}
           onCreated={() => { setIsModalOpen(false); load() }}
+        />
+      )}
+
+      {addingToStatus && (
+        <CreateTaskModal
+          defaultStatus={addingToStatus}
+          onClose={() => setAddingToStatus(null)}
+          onCreated={() => { setAddingToStatus(null); load() }}
         />
       )}
 
