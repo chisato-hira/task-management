@@ -6,16 +6,15 @@ import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
 
 const COLUMNS: ColumnDef[] = [
-  { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-500' },
-  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-amber-500'  },
-  { status: 'DONE',        label: '完了',   headerColor: 'bg-emerald-500' },
+  { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-500',  bgColor: 'bg-indigo-50'  },
+  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-amber-500',   bgColor: 'bg-amber-50'   },
+  { status: 'DONE',        label: '完了',   headerColor: 'bg-emerald-500', bgColor: 'bg-emerald-50' },
 ]
 
 export default function Board() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [addingToStatus, setAddingToStatus] = useState<TaskStatus | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
@@ -56,15 +55,6 @@ export default function Board() {
 
   return (
     <>
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1 px-4 py-2 bg-indigo-500 text-white text-sm font-medium rounded-lg hover:bg-indigo-600"
-        >
-          <span className="text-lg leading-none">+</span> タスクを追加
-        </button>
-      </div>
-
       <div className="flex gap-4">
         {COLUMNS.map(col => (
           <Column
@@ -76,13 +66,6 @@ export default function Board() {
           />
         ))}
       </div>
-
-      {isModalOpen && (
-        <CreateTaskModal
-          onClose={() => setIsModalOpen(false)}
-          onCreated={() => { setIsModalOpen(false); load() }}
-        />
-      )}
 
       {addingToStatus && (
         <CreateTaskModal

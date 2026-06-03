@@ -17,4 +17,5 @@ export interface ColumnDef {
   status: TaskStatus
   label: string
   headerColor: string
+  bgColor: string
 }
