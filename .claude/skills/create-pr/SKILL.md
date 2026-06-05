@@ -20,22 +20,23 @@ PR を作成する前に、以下の項目をすべて確認してユーザー�
 ### 動作確認
 - [ ] ローカルで動作確認済みか
 
-動作確認の起動手順：
+**動作確認が済んでいない場合はPR作成を止め、先にユーザーに以下の手順で確認を促すこと：**
 
-```bash
-# DB起動
-docker compose up -d
-
-# バックエンド起動
-cd backend
-./gradlew bootRun
-
-# フロントエンド起動（別ターミナル）
-cd frontend
-npm run dev
 ```
+1. DB起動
+   docker compose up -d
 
-ブラウザで確認： `http://localhost:5173`
+2. バックエンド起動
+   cd backend
+   ./gradlew bootRun
+
+3. フロントエンド起動（別ターミナル）
+   cd frontend
+   npm run dev
+
+4. ブラウザで確認
+   http://localhost:5173
+```
 
 ---
 
@@ -61,10 +62,7 @@ Closes #XX
 - 動作確認：済み
 
 ■ 確認手順
-1. docker compose up -d
-2. cd backend && ./gradlew bootRun
-3. cd frontend && npm run dev
-4. http://localhost:5173 をブラウザで開く
+1. （機能の操作手順を記載する）
 ```
 
 ---
