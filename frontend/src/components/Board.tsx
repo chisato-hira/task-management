@@ -16,6 +16,10 @@ import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
 
+type SortMode = 'none' | 'priority' | 'dueDate'
+
+const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 } as const
+
 const COLUMNS: ColumnDef[] = [
   { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-500',  bgColor: 'bg-indigo-50'  },
   { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-amber-500',   bgColor: 'bg-amber-50'   },
@@ -29,7 +33,32 @@ export default function Board() {
   const [addingToStatus, setAddingToStatus] = useState<TaskStatus | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [sortMode, setSortMode] = useState<SortMode>('none')
   const originalTasksRef = useRef<Task[]>([])
+
+  const sortTasks = (columnTasks: Task[]): Task[] => {
+    if (sortMode === 'priority') {
+      return [...columnTasks].sort((a, b) => {
+        const pa = a.priority != null ? PRIORITY_ORDER[a.priority] : 3
+        const pb = b.priority != null ? PRIORITY_ORDER[b.priority] : 3
+        if (pa !== pb) return pa - pb
+        return a.position - b.position
+      })
+    }
+    if (sortMode === 'dueDate') {
+      return [...columnTasks].sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return a.position - b.position
+        if (!a.dueDate) return 1
+        if (!b.dueDate) return -1
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      })
+    }
+    return [...columnTasks].sort((a, b) => a.position - b.position)
+  }
+
+  const toggleSort = (mode: SortMode) => {
+    setSortMode(prev => prev === mode ? 'none' : mode)
+  }
 
   const sensors = useSensors(useSensor(PointerSensor, {
     activationConstraint: { distance: 5 },
@@ -79,6 +108,17 @@ export default function Board() {
     let finalTasks: Task[]
 
     if (originalTask.status === targetStatus) {
+      // 期限順ソート中は同一カラム内の並び替えをすべてブロック
+      if (sortMode === 'dueDate') {
+        setTasks(originalTasksRef.current)
+        return
+      }
+      // 優先度順ソート中は異なる優先度間の並び替えをブロック
+      if (sortMode === 'priority' && overTask && originalTask.priority !== overTask.priority) {
+        setTasks(originalTasksRef.current)
+        return
+      }
+
       // 同一カラム内の並び替え
       const colTasks = originalTasksRef.current.filter(t => t.status === targetStatus)
       const oldIdx = colTasks.findIndex(t => t.id === activeId)
@@ -138,12 +178,36 @@ export default function Board() {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div className="flex gap-2 mb-4">
+        <span className="text-sm text-gray-500 self-center mr-1">ソート：</span>
+        <button
+          onClick={() => toggleSort('priority')}
+          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            sortMode === 'priority'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          優先度順
+        </button>
+        <button
+          onClick={() => toggleSort('dueDate')}
+          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            sortMode === 'dueDate'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          期限順
+        </button>
+      </div>
+
       <div className="flex gap-4">
         {COLUMNS.map(col => (
           <Column
             key={col.status}
             columnDef={col}
-            tasks={tasks.filter(t => t.status === col.status).sort((a, b) => a.position - b.position)}
+            tasks={sortTasks(tasks.filter(t => t.status === col.status))}
             onTaskClick={setSelectedTask}
             onAddClick={() => setAddingToStatus(col.status)}
           />
