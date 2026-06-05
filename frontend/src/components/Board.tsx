@@ -16,7 +16,7 @@ import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
 
-type SortMode = 'none' | 'priority' | 'dueDate'
+export type SortMode = 'none' | 'priority' | 'dueDate'
 
 const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 } as const
 
@@ -33,10 +33,14 @@ export default function Board() {
   const [addingToStatus, setAddingToStatus] = useState<TaskStatus | null>(null)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [activeTask, setActiveTask] = useState<Task | null>(null)
-  const [sortMode, setSortMode] = useState<SortMode>('none')
+  const [columnSortModes, setColumnSortModes] = useState<Record<TaskStatus, SortMode>>({
+    TODO: 'none',
+    IN_PROGRESS: 'none',
+    DONE: 'none',
+  })
   const originalTasksRef = useRef<Task[]>([])
 
-  const sortTasks = (columnTasks: Task[]): Task[] => {
+  const sortTasks = (columnTasks: Task[], sortMode: SortMode): Task[] => {
     if (sortMode === 'priority') {
       return [...columnTasks].sort((a, b) => {
         const pa = a.priority != null ? PRIORITY_ORDER[a.priority] : 3
@@ -56,8 +60,8 @@ export default function Board() {
     return [...columnTasks].sort((a, b) => a.position - b.position)
   }
 
-  const toggleSort = (mode: SortMode) => {
-    setSortMode(prev => prev === mode ? 'none' : mode)
+  const toggleColumnSort = (status: TaskStatus, mode: SortMode) => {
+    setColumnSortModes(prev => ({ ...prev, [status]: prev[status] === mode ? 'none' : mode }))
   }
 
   const sensors = useSensors(useSensor(PointerSensor, {
@@ -108,13 +112,14 @@ export default function Board() {
     let finalTasks: Task[]
 
     if (originalTask.status === targetStatus) {
+      const colSortMode = columnSortModes[targetStatus]
       // 期限順ソート中は同一カラム内の並び替えをすべてブロック
-      if (sortMode === 'dueDate') {
+      if (colSortMode === 'dueDate') {
         setTasks(originalTasksRef.current)
         return
       }
       // 優先度順ソート中は異なる優先度間の並び替えをブロック
-      if (sortMode === 'priority' && overTask && originalTask.priority !== overTask.priority) {
+      if (colSortMode === 'priority' && overTask && originalTask.priority !== overTask.priority) {
         setTasks(originalTasksRef.current)
         return
       }
@@ -178,36 +183,14 @@ export default function Board() {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-2 mb-4">
-        <span className="text-sm text-gray-500 self-center mr-1">ソート：</span>
-        <button
-          onClick={() => toggleSort('priority')}
-          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-            sortMode === 'priority'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          優先度順
-        </button>
-        <button
-          onClick={() => toggleSort('dueDate')}
-          className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-            sortMode === 'dueDate'
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          期限順
-        </button>
-      </div>
-
       <div className="flex gap-4">
         {COLUMNS.map(col => (
           <Column
             key={col.status}
             columnDef={col}
-            tasks={sortTasks(tasks.filter(t => t.status === col.status))}
+            tasks={sortTasks(tasks.filter(t => t.status === col.status), columnSortModes[col.status])}
+            sortMode={columnSortModes[col.status]}
+            onToggleSort={(mode) => toggleColumnSort(col.status, mode)}
             onTaskClick={setSelectedTask}
             onAddClick={() => setAddingToStatus(col.status)}
           />
