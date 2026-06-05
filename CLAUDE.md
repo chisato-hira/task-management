@@ -17,9 +17,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 1. GitHub に Issue を作成する
 2. Issue 番号をもとにブランチを作成する
-3. ブランチ上で実装・コミットを行う
-4. PR を作成して main へマージする
-5. Issue を閉じる
+3. ブランチ上で実装を行う（こまめにコミットしてよい）
+4. プッシュ前にブラウザで動作確認する（http://localhost:5173）
+5. プッシュを行う
+6. PR を作成して main へマージする
+7. Issue を閉じる
 
 ---
 
