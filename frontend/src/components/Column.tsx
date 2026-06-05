@@ -56,12 +56,14 @@ export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTas
           )}
         </div>
       </SortableContext>
-      <button
-        onClick={onAddClick}
-        className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
-      >
-        <span className="text-base leading-none">+</span> タスクを追加
-      </button>
+      {columnDef.status === 'TODO' && (
+        <button
+          onClick={onAddClick}
+          className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
+        >
+          <span className="text-base leading-none">+</span> タスクを追加
+        </button>
+      )}
     </div>
   )
 }
