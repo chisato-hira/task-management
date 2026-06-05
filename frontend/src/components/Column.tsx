@@ -1,26 +1,51 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import type { Task, ColumnDef } from '../types/Task'
+import type { SortMode } from './Board'
 import TaskCard from './TaskCard'
 
 interface ColumnProps {
   columnDef: ColumnDef
   tasks: Task[]
+  sortMode: SortMode
+  onToggleSort: (mode: SortMode) => void
   onTaskClick: (task: Task) => void
   onAddClick: () => void
 }
 
-export default function Column({ columnDef, tasks, onTaskClick, onAddClick }: ColumnProps) {
+export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTaskClick, onAddClick }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id: columnDef.status })
 
   return (
     <div className={`flex-1 ${columnDef.bgColor} rounded-xl p-3 min-w-0 flex flex-col`}>
-      <div className="flex items-center gap-2 mb-3">
+      <div className="flex items-center gap-2 mb-2">
         <span className={`w-3 h-3 rounded-full ${columnDef.headerColor}`} />
         <h2 className="font-semibold text-gray-700 text-sm">{columnDef.label}</h2>
         <span className="ml-auto bg-white/70 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
           {tasks.length}
         </span>
+      </div>
+      <div className="flex gap-1 mb-3">
+        <button
+          onClick={() => onToggleSort('priority')}
+          className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+            sortMode === 'priority'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-white/70 text-gray-500 hover:bg-white'
+          }`}
+        >
+          優先度順
+        </button>
+        <button
+          onClick={() => onToggleSort('dueDate')}
+          className={`px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+            sortMode === 'dueDate'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-white/70 text-gray-500 hover:bg-white'
+          }`}
+        >
+          期限順
+        </button>
       </div>
       <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
         <div ref={setNodeRef} className="flex flex-col gap-2 flex-1 bg-white/50 rounded-lg p-2 min-h-[60px]">
