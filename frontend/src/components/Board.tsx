@@ -11,7 +11,7 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import type { Task, ColumnDef, TaskStatus } from '../types/Task'
-import { fetchTasks, reorderTasks } from '../api/taskApi'
+import { fetchTasks, reorderTasks, deleteDoneTasks } from '../api/taskApi'
 import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
@@ -38,6 +38,9 @@ export default function Board() {
     IN_PROGRESS: 'none',
     DONE: 'none',
   })
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+  const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null)
   const originalTasksRef = useRef<Task[]>([])
 
   const sortTasks = (columnTasks: Task[], sortMode: SortMode): Task[] => {
@@ -163,6 +166,20 @@ export default function Board() {
     }
   }
 
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true)
+    setBulkDeleteError(null)
+    try {
+      await deleteDoneTasks()
+      setShowBulkDeleteConfirm(false)
+      load()
+    } catch {
+      setBulkDeleteError('削除に失敗しました。バックエンドが起動しているか確認してください。')
+    } finally {
+      setBulkDeleting(false)
+    }
+  }
+
   if (loading) {
     return <p className="text-center text-gray-400 mt-16">読み込み中...</p>
   }
@@ -193,6 +210,7 @@ export default function Board() {
             onToggleSort={(mode) => toggleColumnSort(col.status, mode)}
             onTaskClick={setSelectedTask}
             onAddClick={() => setAddingToStatus(col.status)}
+            onBulkDeleteClick={() => setShowBulkDeleteConfirm(true)}
           />
         ))}
       </div>
@@ -218,7 +236,39 @@ export default function Board() {
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
           onUpdated={() => { setSelectedTask(null); load() }}
+          onDeleted={() => { setSelectedTask(null); load() }}
         />
+      )}
+
+      {showBulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h3 className="text-base font-bold text-gray-800 mb-2">完了タスクの一括削除</h3>
+            <p className="text-sm text-gray-600 mb-1">
+              完了済みのタスク <span className="font-bold text-gray-800">{tasks.filter(t => t.status === 'DONE').length} 件</span>をすべて削除しますか？
+            </p>
+            <p className="text-xs text-red-500 mt-2 mb-5">この操作は取り消せません。</p>
+            {bulkDeleteError && (
+              <p className="text-sm text-red-500 mb-3">{bulkDeleteError}</p>
+            )}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setShowBulkDeleteConfirm(false); setBulkDeleteError(null) }}
+                disabled={bulkDeleting}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-40"
+              >
+                {bulkDeleting ? '削除中...' : 'すべて削除する'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </DndContext>
   )

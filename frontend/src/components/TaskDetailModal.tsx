@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import type { Task, TaskStatus, TaskPriority } from '../types/Task'
-import { updateTask } from '../api/taskApi'
+import { updateTask, deleteTask } from '../api/taskApi'
 
 interface TaskDetailModalProps {
   task: Task
   onClose: () => void
   onUpdated: () => void
+  onDeleted: () => void
 }
 
 const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
@@ -40,7 +41,7 @@ interface FormValues {
   dueDate: string
 }
 
-export default function TaskDetailModal({ task, onClose, onUpdated }: TaskDetailModalProps) {
+export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }: TaskDetailModalProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [values, setValues] = useState<FormValues>({
     title:       task.title,
@@ -50,6 +51,8 @@ export default function TaskDetailModal({ task, onClose, onUpdated }: TaskDetail
     dueDate:     task.dueDate ?? '',
   })
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError]   = useState<string | null>(null)
 
   useEffect(() => {
@@ -59,6 +62,20 @@ export default function TaskDetailModal({ task, onClose, onUpdated }: TaskDetail
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
+
+  const handleDelete = async () => {
+    setDeleting(true)
+    setError(null)
+    try {
+      await deleteTask(task.id)
+      onDeleted()
+    } catch {
+      setError('削除に失敗しました。バックエンドが起動しているか確認してください。')
+      setShowDeleteConfirm(false)
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -194,34 +211,71 @@ export default function TaskDetailModal({ task, onClose, onUpdated }: TaskDetail
         )}
 
         {/* フッターボタン */}
-        <div className="flex justify-end gap-3 mt-5">
-          {isEditing ? (
-            <>
+        <div className="flex justify-between items-center mt-5">
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            disabled={saving || deleting}
+            className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-40"
+          >
+            削除する
+          </button>
+          <div className="flex gap-3">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  disabled={saving}
+                  className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
+                >
+                  キャンセル
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || values.title.trim() === ''}
+                  className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:opacity-40"
+                >
+                  {saving ? '保存中...' : '保存する'}
+                </button>
+              </>
+            ) : (
               <button
-                onClick={() => setIsEditing(false)}
-                disabled={saving}
+                onClick={onClose}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                閉じる
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 削除確認ダイアログ */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-60">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+            <h3 className="text-base font-bold text-gray-800 mb-2">タスクの削除</h3>
+            <p className="text-sm text-gray-600 mb-1">以下のタスクを削除しますか？</p>
+            <p className="text-sm font-medium text-gray-800 bg-gray-50 rounded-lg px-3 py-2 mb-4">「{task.title}」</p>
+            <p className="text-xs text-red-500 mb-5">この操作は取り消せません。</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
                 className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
               >
                 キャンセル
               </button>
               <button
-                onClick={handleSave}
-                disabled={saving || values.title.trim() === ''}
-                className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 disabled:opacity-40"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-40"
               >
-                {saving ? '保存中...' : '保存する'}
+                {deleting ? '削除中...' : '削除する'}
               </button>
-            </>
-          ) : (
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              閉じる
-            </button>
-          )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

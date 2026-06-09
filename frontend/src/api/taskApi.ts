@@ -65,3 +65,17 @@ export async function reorderTasks(requests: ReorderTaskRequest[]): Promise<void
   }
 }
 
+export async function deleteTask(id: number): Promise<void> {
+  const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+  if (!response.ok) {
+    throw new Error('タスクの削除に失敗しました')
+  }
+}
+
+export async function deleteDoneTasks(): Promise<void> {
+  const response = await fetch('/api/tasks/status/DONE', { method: 'DELETE' })
+  if (!response.ok) {
+    throw new Error('完了タスクの一括削除に失敗しました')
+  }
+}
+
