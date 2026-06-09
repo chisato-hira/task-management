@@ -11,9 +11,10 @@ interface ColumnProps {
   onToggleSort: (mode: SortMode) => void
   onTaskClick: (task: Task) => void
   onAddClick: () => void
+  onBulkDeleteClick?: () => void
 }
 
-export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTaskClick, onAddClick }: ColumnProps) {
+export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTaskClick, onAddClick, onBulkDeleteClick }: ColumnProps) {
   const { setNodeRef } = useDroppable({ id: columnDef.status })
 
   return (
@@ -62,6 +63,14 @@ export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTas
           className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
         >
           <span className="text-base leading-none">+</span> タスクを追加
+        </button>
+      )}
+      {columnDef.status === 'DONE' && tasks.length > 0 && (
+        <button
+          onClick={onBulkDeleteClick}
+          className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+        >
+          完了をすべて削除
         </button>
       )}
     </div>

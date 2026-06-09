@@ -57,4 +57,15 @@ public class TaskService {
         });
     }
 
+    public boolean deleteById(Long id) {
+        if (!taskRepository.existsById(id)) return false;
+        taskRepository.deleteById(id);
+        return true;
+    }
+
+    @Transactional
+    public void deleteByStatus(TaskStatus status) {
+        taskRepository.deleteAll(taskRepository.findByStatusOrderByPositionAsc(status));
+    }
+
 }
