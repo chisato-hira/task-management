@@ -3,7 +3,7 @@ import Board from './components/Board'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-zinc-50">
       <Header />
       <main className="p-6">
         <Board />
