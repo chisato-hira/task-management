@@ -52,16 +52,22 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
     opacity: isDragging ? 0.4 : 1,
   }
 
+  const isDone = task.status === 'DONE'
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 cursor-grab active:cursor-grabbing hover:border-indigo-300 hover:shadow-md transition-shadow"
+      className={`rounded-lg p-3 shadow-sm border cursor-grab active:cursor-grabbing transition-shadow ${
+        isDone
+          ? 'bg-zinc-50 border-zinc-200 opacity-60 hover:opacity-80'
+          : 'bg-white border-gray-200 hover:shadow-lg hover:shadow-gray-300 hover:-translate-y-0.5'
+      }`}
       onClick={() => onClick(task)}
     >
-      <p className="text-sm font-medium text-gray-800">{task.title}</p>
+      <p className={`text-sm font-medium ${isDone ? 'text-zinc-400 line-through' : 'text-gray-800'}`}>{task.title}</p>
       <div className="flex items-center gap-2 mt-2">
         {task.priority && (
           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${priorityConfig[task.priority].className}`}>

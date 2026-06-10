@@ -21,9 +21,9 @@ export type SortMode = 'none' | 'priority' | 'dueDate'
 const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 } as const
 
 const COLUMNS: ColumnDef[] = [
-  { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-500',  bgColor: 'bg-indigo-50'  },
-  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-amber-500',   bgColor: 'bg-amber-50'   },
-  { status: 'DONE',        label: '完了',   headerColor: 'bg-emerald-500', bgColor: 'bg-emerald-50' },
+  { status: 'TODO',        label: '未着手', headerColor: 'bg-pink-400',  bgColor: 'bg-pink-50'  },
+  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-sky-500',   bgColor: 'bg-sky-50'   },
+  { status: 'DONE',        label: '完了',   headerColor: 'bg-zinc-400',  bgColor: 'bg-zinc-100' },
 ]
 
 export default function Board() {
@@ -217,7 +217,7 @@ export default function Board() {
 
       <DragOverlay>
         {activeTask && (
-          <div className="bg-white rounded-lg p-3 shadow-lg border border-indigo-300 opacity-90 cursor-grabbing">
+          <div className="bg-white rounded-lg p-3 shadow-lg border border-gray-300 opacity-90 cursor-grabbing">
             <p className="text-sm font-medium text-gray-800">{activeTask.title}</p>
           </div>
         )}
