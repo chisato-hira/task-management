@@ -212,3 +212,8 @@ App.tsx
 | GET | `/api/tasks` | 全タスク取得 |
 | GET | `/api/tasks/{id}` | ID 指定取得 |
 | GET | `/api/tasks/status/{status}` | ステータス絞り込み |
+| POST | `/api/tasks` | タスク新規作成 |
+| PUT | `/api/tasks/{id}` | タスク更新 |
+| PATCH | `/api/tasks/reorder` | タスクの並び替え |
+| DELETE | `/api/tasks/{id}` | タスク個別削除 |
+| DELETE | `/api/tasks/status/{status}` | ステータス指定で一括削除 |
