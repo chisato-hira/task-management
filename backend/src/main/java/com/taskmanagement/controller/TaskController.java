@@ -1,10 +1,12 @@
 package com.taskmanagement.controller;
 
+import com.taskmanagement.dto.CreateTaskRequest;
 import com.taskmanagement.dto.ReorderTaskRequest;
 import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
 import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +40,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task saved = taskService.save(task);
+    public ResponseEntity<Task> createTask(@Valid @RequestBody CreateTaskRequest request) {
+        Task saved = taskService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
@@ -50,7 +52,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequest request) {
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequest request) {
         return taskService.update(id, request)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

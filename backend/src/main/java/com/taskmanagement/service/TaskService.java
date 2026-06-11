@@ -1,5 +1,6 @@
 package com.taskmanagement.service;
 
+import com.taskmanagement.dto.CreateTaskRequest;
 import com.taskmanagement.dto.ReorderTaskRequest;
 import com.taskmanagement.dto.UpdateTaskRequest;
 import com.taskmanagement.entity.Task;
@@ -31,7 +32,17 @@ public class TaskService {
         return taskRepository.findByStatusOrderByPositionAsc(status);
     }
 
-    public Task save(Task task) {
+    public Task create(CreateTaskRequest request) {
+        TaskStatus status = request.getStatus() != null ? request.getStatus() : TaskStatus.TODO;
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setPriority(request.getPriority());
+        task.setDueDate(request.getDueDate());
+        task.setStatus(status);
+        task.setPosition(taskRepository.findMaxPositionByStatus(status) + 1);
+
         return taskRepository.save(task);
     }
 
@@ -48,8 +59,8 @@ public class TaskService {
 
     public Optional<Task> update(Long id, UpdateTaskRequest request) {
         return taskRepository.findById(id).map(task -> {
-            if (request.getTitle() != null) task.setTitle(request.getTitle());
-            if (request.getDescription() != null) task.setDescription(request.getDescription());
+            task.setTitle(request.getTitle());
+            task.setDescription(request.getDescription());
             task.setStatus(request.getStatus());
             task.setPriority(request.getPriority());
             task.setDueDate(request.getDueDate());
