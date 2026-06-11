@@ -69,7 +69,9 @@ public class TaskService {
     }
 
     public boolean deleteById(Long id) {
-        if (!taskRepository.existsById(id)) return false;
+        if (!taskRepository.existsById(id)) {
+            return false;
+        }
         taskRepository.deleteById(id);
         return true;
     }

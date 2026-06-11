@@ -27,6 +27,7 @@
 | バリデーション | Spring Boot Validation | Spring Boot 管理 | |
 | DB ドライバ | PostgreSQL Driver | Spring Boot 管理 | |
 | コード省力化 | Lombok | Spring Boot 管理 | ボイラープレート削減 |
+| 静的解析 | Checkstyle | 10.21.1 | `./gradlew build` の `check` タスクで実行。設定は `backend/config/checkstyle/checkstyle.xml` |
 
 > Spring Boot 管理：Spring Boot の BOM（部品表）によって自動的にバージョンが決まるため、個別指定不要。
 

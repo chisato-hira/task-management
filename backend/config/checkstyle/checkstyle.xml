@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+  ESLint相当のチェックをバックエンド（Java）でも行うための最小構成。
+  Javadoc必須化など大規模な書き直しが必要なルールは含めず、
+  バグの温床になりやすい項目のみをチェックする。
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+
+    <!-- 1行が長すぎないか -->
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="ignorePattern" value="^import .*$"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- import規約 -->
+        <module name="AvoidStarImport"/>
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+
+        <!-- バグの温床になりやすい記述 -->
+        <module name="EqualsHashCode"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="EmptyStatement"/>
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+        </module>
+
+        <!-- 制御構文には必ず波括弧を付ける -->
+        <module name="NeedBraces"/>
+
+        <!-- 1行に複数文を書かない -->
+        <module name="OneStatementPerLine"/>
+    </module>
+</module>
