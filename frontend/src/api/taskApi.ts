@@ -1,9 +1,47 @@
 import type { Task, TaskPriority, TaskStatus } from '../types/Task'
 
+export class TaskApiError extends Error {}
+
+async function extractErrorMessage(response: Response): Promise<string | null> {
+  let body: unknown
+  try {
+    body = await response.json()
+  } catch {
+    return null
+  }
+  if (typeof body !== 'object' || body === null) return null
+
+  const data = body as Record<string, unknown>
+
+  if (Array.isArray(data.errors) && data.errors.length > 0) {
+    const messages = data.errors
+      .map(error => {
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+          const fieldError = error as Record<string, unknown>
+          if (typeof fieldError.defaultMessage === 'string') return fieldError.defaultMessage
+          if (typeof fieldError.message === 'string') return fieldError.message
+        }
+        return null
+      })
+      .filter((message): message is string => !!message)
+    if (messages.length > 0) return messages.join(' / ')
+  }
+
+  if (typeof data.detail === 'string' && data.detail) return data.detail
+
+  return null
+}
+
+async function throwApiError(response: Response, fallback: string): Promise<never> {
+  const detail = await extractErrorMessage(response)
+  throw new TaskApiError(detail ?? fallback)
+}
+
 export async function fetchTasks(): Promise<Task[]> {
   const response = await fetch('/api/tasks')
   if (!response.ok) {
-    throw new Error('タスクの取得に失敗しました')
+    return throwApiError(response, 'タスクの取得に失敗しました')
   }
   return response.json()
 }
@@ -23,7 +61,7 @@ export async function createTask(request: CreateTaskRequest): Promise<Task> {
     body: JSON.stringify(request),
   })
   if (!response.ok) {
-    throw new Error('タスクの作成に失敗しました')
+    return throwApiError(response, 'タスクの作成に失敗しました')
   }
   return response.json()
 }
@@ -43,7 +81,7 @@ export async function updateTask(id: number, request: UpdateTaskRequest): Promis
     body: JSON.stringify(request),
   })
   if (!response.ok) {
-    throw new Error('タスクの更新に失敗しました')
+    return throwApiError(response, 'タスクの更新に失敗しました')
   }
   return response.json()
 }
@@ -61,21 +99,20 @@ export async function reorderTasks(requests: ReorderTaskRequest[]): Promise<void
     body: JSON.stringify(requests),
   })
   if (!response.ok) {
-    throw new Error('並び替えに失敗しました')
+    await throwApiError(response, '並び替えに失敗しました')
   }
 }
 
 export async function deleteTask(id: number): Promise<void> {
   const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
   if (!response.ok) {
-    throw new Error('タスクの削除に失敗しました')
+    await throwApiError(response, 'タスクの削除に失敗しました')
   }
 }
 
 export async function deleteDoneTasks(): Promise<void> {
   const response = await fetch('/api/tasks/status/DONE', { method: 'DELETE' })
   if (!response.ok) {
-    throw new Error('完了タスクの一括削除に失敗しました')
+    await throwApiError(response, '完了タスクの一括削除に失敗しました')
   }
 }
-

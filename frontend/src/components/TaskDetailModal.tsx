@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Task, TaskStatus, TaskPriority } from '../types/Task'
-import { updateTask, deleteTask } from '../api/taskApi'
+import { updateTask, deleteTask, TaskApiError } from '../api/taskApi'
 
 interface TaskDetailModalProps {
   task: Task
@@ -69,8 +69,8 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
     try {
       await deleteTask(task.id)
       onDeleted()
-    } catch {
-      setError('削除に失敗しました。バックエンドが起動しているか確認してください。')
+    } catch (err) {
+      setError(err instanceof TaskApiError ? err.message : '削除に失敗しました。バックエンドが起動しているか確認してください。')
       setShowDeleteConfirm(false)
     } finally {
       setDeleting(false)
@@ -89,8 +89,8 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
         dueDate:     values.dueDate  || null,
       })
       onUpdated()
-    } catch {
-      setError('保存に失敗しました。バックエンドが起動しているか確認してください。')
+    } catch (err) {
+      setError(err instanceof TaskApiError ? err.message : '保存に失敗しました。バックエンドが起動しているか確認してください。')
     } finally {
       setSaving(false)
     }
@@ -111,6 +111,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
             {isEditing ? (
               <input
                 type="text"
+                maxLength={255}
                 value={values.title}
                 onChange={e => setValues({ ...values, title: e.target.value })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400"
