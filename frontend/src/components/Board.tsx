@@ -11,7 +11,7 @@ import {
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import type { Task, ColumnDef, TaskStatus } from '../types/Task'
-import { fetchTasks, reorderTasks, deleteDoneTasks } from '../api/taskApi'
+import { fetchTasks, reorderTasks, deleteDoneTasks, TaskApiError } from '../api/taskApi'
 import Column from './Column'
 import CreateTaskModal from './CreateTaskModal'
 import TaskDetailModal from './TaskDetailModal'
@@ -41,6 +41,7 @@ export default function Board() {
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false)
   const [bulkDeleting, setBulkDeleting] = useState(false)
   const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const originalTasksRef = useRef<Task[]>([])
 
   const sortTasks = (columnTasks: Task[], sortMode: SortMode): Task[] => {
@@ -77,15 +78,18 @@ export default function Board() {
     try {
       const data = await fetchTasks()
       setTasks(data)
-    } catch {
-      setError('タスクの取得に失敗しました。バックエンドが起動しているか確認してください。')
+    } catch (err) {
+      setError(err instanceof TaskApiError ? err.message : 'タスクの取得に失敗しました。バックエンドが起動しているか確認してください。')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    load()
+    fetchTasks()
+      .then(data => setTasks(data))
+      .catch((err: unknown) => setError(err instanceof TaskApiError ? err.message : 'タスクの取得に失敗しました。バックエンドが起動しているか確認してください。'))
+      .finally(() => setLoading(false))
   }, [])
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -161,8 +165,9 @@ export default function Board() {
 
     try {
       await reorderTasks(finalTasks.map(t => ({ id: t.id, status: t.status, position: t.position })))
-    } catch {
+    } catch (err) {
       setTasks(originalTasksRef.current)
+      setActionError(err instanceof TaskApiError ? err.message : '並び替えの保存に失敗しました。バックエンドが起動しているか確認してください。')
     }
   }
 
@@ -173,8 +178,8 @@ export default function Board() {
       await deleteDoneTasks()
       setShowBulkDeleteConfirm(false)
       load()
-    } catch {
-      setBulkDeleteError('削除に失敗しました。バックエンドが起動しているか確認してください。')
+    } catch (err) {
+      setBulkDeleteError(err instanceof TaskApiError ? err.message : '削除に失敗しました。バックエンドが起動しているか確認してください。')
     } finally {
       setBulkDeleting(false)
     }
@@ -200,6 +205,17 @@ export default function Board() {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      {actionError && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
+          <span>{actionError}</span>
+          <button
+            onClick={() => setActionError(null)}
+            className="shrink-0 text-red-400 hover:text-red-600"
+          >
+            閉じる
+          </button>
+        </div>
+      )}
       <div className="flex gap-4">
         {COLUMNS.map(col => (
           <Column

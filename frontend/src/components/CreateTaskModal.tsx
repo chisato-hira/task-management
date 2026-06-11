@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { TaskPriority, TaskStatus } from '../types/Task'
-import { createTask } from '../api/taskApi'
+import { createTask, TaskApiError } from '../api/taskApi'
 
 interface CreateTaskModalProps {
   onClose: () => void
@@ -52,8 +52,8 @@ export default function CreateTaskModal({ onClose, onCreated, defaultStatus = 'T
         dueDate: values.dueDate || null,
       })
       onCreated()
-    } catch {
-      setError('タスクの作成に失敗しました。バックエンドが起動しているか確認してください。')
+    } catch (err) {
+      setError(err instanceof TaskApiError ? err.message : 'タスクの作成に失敗しました。バックエンドが起動しているか確認してください。')
     } finally {
       setSubmitting(false)
     }
@@ -78,6 +78,7 @@ export default function CreateTaskModal({ onClose, onCreated, defaultStatus = 'T
             <input
               type="text"
               required
+              maxLength={255}
               value={values.title}
               onChange={e => setValues({ ...values, title: e.target.value })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"

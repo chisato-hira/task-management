@@ -77,7 +77,7 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
         {task.dueDate && (
           dueDateStatus ? (
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${dueDateConfig[dueDateStatus].className}`}>
-              {dueDateConfig[dueDateStatus].badge}　{formatDate(task.dueDate)}
+              {dueDateConfig[dueDateStatus].badge}<span className="ml-1">{formatDate(task.dueDate)}</span>
             </span>
           ) : (
             <span className="text-xs text-gray-400">{formatDate(task.dueDate)}</span>

@@ -27,6 +27,7 @@
 | バリデーション | Spring Boot Validation | Spring Boot 管理 | |
 | DB ドライバ | PostgreSQL Driver | Spring Boot 管理 | |
 | コード省力化 | Lombok | Spring Boot 管理 | ボイラープレート削減 |
+| 静的解析 | Checkstyle | 10.21.1 | `./gradlew build` の `check` タスクで実行。設定は `backend/config/checkstyle/checkstyle.xml` |
 
 > Spring Boot 管理：Spring Boot の BOM（部品表）によって自動的にバージョンが決まるため、個別指定不要。
 
@@ -51,9 +52,13 @@
 | メソッド | URL | 処理内容 |
 |---------|-----|---------|
 | GET | `/api/tasks` | 全タスクを取得する |
+| GET | `/api/tasks/{id}` | 指定した ID のタスクを取得する |
+| GET | `/api/tasks/status/{status}` | 指定したステータスのタスクを表示順に取得する |
 | POST | `/api/tasks` | 新しいタスクを作成する |
 | PUT | `/api/tasks/{id}` | 指定した ID のタスクを更新する |
+| PATCH | `/api/tasks/reorder` | タスクの並び順・ステータスを一括更新する |
 | DELETE | `/api/tasks/{id}` | 指定した ID のタスクを削除する |
+| DELETE | `/api/tasks/status/{status}` | 指定したステータスのタスクを一括削除する |
 
 ---
 
@@ -71,11 +76,30 @@
     "title": "買い物をする",
     "description": "牛乳・卵・パン",
     "priority": "HIGH",
-    "due_date": "2026-05-10",
-    "status": "TODO"
+    "dueDate": "2026-05-10",
+    "status": "TODO",
+    "position": 0,
+    "createdAt": "2026-05-01T10:00:00",
+    "updatedAt": "2026-05-01T10:00:00"
   }
 ]
 ```
+
+---
+
+### GET /api/tasks/{id}（ID指定取得）
+
+リクエスト：なし
+
+レスポンス：200 OK（上記と同形式の単一オブジェクト）。存在しない ID の場合は 404 Not Found
+
+---
+
+### GET /api/tasks/status/{status}（ステータス絞り込み）
+
+リクエスト：なし（`status` は `TODO` / `IN_PROGRESS` / `DONE` のいずれか）
+
+レスポンス：該当ステータスのタスク配列（`position` 昇順）。形式は GET /api/tasks と同じ
 
 ---
 
@@ -87,19 +111,27 @@
   "title": "買い物をする",
   "description": "牛乳・卵・パン",
   "priority": "HIGH",
-  "due_date": "2026-05-10"
+  "dueDate": "2026-05-10",
+  "status": "TODO"
 }
 ```
 
-レスポンス：
+- `title` は必須・255文字以内。それ以外の項目は省略可能
+- `status` を省略した場合は `TODO` として作成される
+- `position` はサーバー側で自動採番される（同一ステータス内の末尾に追加）
+
+レスポンス：201 Created
 ```json
 {
   "id": 1,
   "title": "買い物をする",
   "description": "牛乳・卵・パン",
   "priority": "HIGH",
-  "due_date": "2026-05-10",
-  "status": "TODO"
+  "dueDate": "2026-05-10",
+  "status": "TODO",
+  "position": 0,
+  "createdAt": "2026-05-01T10:00:00",
+  "updatedAt": "2026-05-01T10:00:00"
 }
 ```
 
@@ -113,27 +145,42 @@
   "title": "買い物をする",
   "description": "牛乳・卵・パン",
   "priority": "MEDIUM",
-  "due_date": "2026-05-12",
+  "dueDate": "2026-05-12",
   "status": "IN_PROGRESS"
 }
 ```
 
-レスポンス：
-```json
-{
-  "id": 1,
-  "title": "買い物をする",
-  "description": "牛乳・卵・パン",
-  "priority": "MEDIUM",
-  "due_date": "2026-05-12",
-  "status": "IN_PROGRESS"
-}
-```
+- `title`・`status` は必須
+- `description`・`priority`・`dueDate` を未設定にする場合は `null` を指定する
+
+レスポンス：200 OK（更新後のタスク。形式は POST のレスポンスと同じ）。存在しない ID の場合は 404 Not Found
 
 ---
 
-### DELETE /api/tasks/{id}（タスク削除）
+### PATCH /api/tasks/reorder（並び替え）
+
+リクエスト：
+```json
+[
+  { "id": 1, "status": "IN_PROGRESS", "position": 0 },
+  { "id": 2, "status": "IN_PROGRESS", "position": 1 }
+]
+```
+
+レスポンス：200 OK（ボディなし）
+
+---
+
+### DELETE /api/tasks/{id}（タスク個別削除）
 
 リクエスト：なし
+
+レスポンス：204 No Content（内容なし・削除成功）。存在しない ID の場合は 404 Not Found
+
+---
+
+### DELETE /api/tasks/status/{status}（ステータス指定一括削除）
+
+リクエスト：なし（`status` は `TODO` / `IN_PROGRESS` / `DONE` のいずれか）
 
 レスポンス：204 No Content（内容なし・削除成功）

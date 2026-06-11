@@ -1,5 +1,6 @@
 plugins {
 	java
+	checkstyle
 	id("org.springframework.boot") version "4.0.3"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -34,4 +35,10 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+checkstyle {
+	toolVersion = "10.21.1"
+	configFile = file("config/checkstyle/checkstyle.xml")
+	maxWarnings = 0
 }
