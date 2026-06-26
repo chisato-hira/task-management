@@ -27,6 +27,9 @@ Trello 風のカンバンボード形式でタスクを視覚的に管理でき�
 | | TypeScript | 6.0.3 |
 | | Vite | 8.0.14 |
 | | Tailwind CSS | 4.3.0 |
+| | @dnd-kit/core | 6.3.1 |
+| | @dnd-kit/sortable | 10.0.0 |
+| | @dnd-kit/utilities | 3.2.2 |
 | | npm | 11.11.0 |
 | **バックエンド** | Java | 25 |
 | | Spring Boot | 4.0.3 |
@@ -110,7 +113,9 @@ npm run dev
 | GET | `/api/tasks/status/{status}` | ステータスでタスクを絞り込む |
 | POST | `/api/tasks` | 新しいタスクを作成する |
 | PUT | `/api/tasks/{id}` | 指定 ID のタスクを更新する |
+| PATCH | `/api/tasks/reorder` | タスクの並び順・ステータスを一括更新する |
 | DELETE | `/api/tasks/{id}` | 指定 ID のタスクを削除する |
+| DELETE | `/api/tasks/status/{status}` | 指定ステータスのタスクを一括削除する |
 
 ### リクエスト例（タスク作成）
 
