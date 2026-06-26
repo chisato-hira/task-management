@@ -8,6 +8,7 @@ import com.taskmanagement.entity.TaskStatus;
 import com.taskmanagement.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,14 +48,24 @@ public class TaskService {
     }
 
     @Transactional
-    public void reorder(List<ReorderTaskRequest> requests) {
+    public boolean reorder(List<ReorderTaskRequest> requests) {
+        List<Task> tasksToUpdate = new ArrayList<>();
         for (ReorderTaskRequest req : requests) {
-            taskRepository.findById(req.getId()).ifPresent(task -> {
-                task.setStatus(req.getStatus());
-                task.setPosition(req.getPosition());
-                taskRepository.save(task);
-            });
+            Task task = taskRepository.findById(req.getId()).orElse(null);
+            if (task == null) {
+                return false;
+            }
+            tasksToUpdate.add(task);
         }
+
+        for (int i = 0; i < requests.size(); i++) {
+            Task task = tasksToUpdate.get(i);
+            ReorderTaskRequest req = requests.get(i);
+            task.setStatus(req.getStatus());
+            task.setPosition(req.getPosition());
+            taskRepository.save(task);
+        }
+        return true;
     }
 
     public Optional<Task> update(Long id, UpdateTaskRequest request) {

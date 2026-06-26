@@ -54,9 +54,10 @@ public class TaskController {
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<Void> reorderTasks(@RequestBody List<ReorderTaskRequest> requests) {
-        taskService.reorder(requests);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> reorderTasks(@Valid @RequestBody List<@Valid ReorderTaskRequest> requests) {
+        return taskService.reorder(requests)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
