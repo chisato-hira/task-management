@@ -11,7 +11,7 @@
 | ビルドツール | Vite | 8.0.14 | |
 | スタイリング | Tailwind CSS | 4.3.0 | |
 | React プラグイン | @vitejs/plugin-react | 6.0.2 | Vite と合わせて使用 |
-| ドラッグ＆ドロップ | @dnd-kit/core | 未導入 | タスク移動機能で使用予定 |
+| ドラッグ＆ドロップ | @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities | 6.3.1 / 10.0.0 / 3.2.2 | タスク移動・並び替え機能で使用 |
 | HTTP クライアント | fetch API | ブラウザ標準 | 外部ライブラリ不要 |
 | パッケージ管理 | npm | 11.11.0 | |
 
