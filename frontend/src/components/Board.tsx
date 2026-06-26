@@ -120,8 +120,8 @@ export default function Board() {
 
     if (originalTask.status === targetStatus) {
       const colSortMode = columnSortModes[targetStatus]
-      // 期限順ソート中は同一カラム内の並び替えをすべてブロック
-      if (colSortMode === 'dueDate') {
+      // 期限順ソート中は異なる期限間の並び替えをブロック
+      if (colSortMode === 'dueDate' && overTask && originalTask.dueDate !== overTask.dueDate) {
         setTasks(originalTasksRef.current)
         return
       }
