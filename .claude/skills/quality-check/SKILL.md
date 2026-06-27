@@ -57,8 +57,9 @@ cd backend
 
 ## ステップ3：ドキュメントとの整合性チェック
 
-`docs/` 配下の以下のドキュメントと実装を突き合わせる：
+`docs/` 配下および以下のドキュメントと実装を突き合わせる：
 
+- `README.md`（プロジェクト概要・機能一覧・APIエンドポイント一覧）
 - `docs/requirements.md`（要件定義書）
 - `docs/functional-requirements.md`（機能仕様書）
 - `docs/screen-design.md`（画面設計書）
@@ -68,6 +69,7 @@ cd backend
 確認項目：
 
 - [ ] 実装済みの API エンドポイント・リクエスト/レスポンス形式が `tech-stack.md` の記載と一致しているか
+- [ ] README.md の機能一覧・APIエンドポイント表が実装、および `tech-stack.md` の記載と一致しているか（表記揺れも含む）
 - [ ] 画面のワイヤーフレーム・入力項目（UIコンポーネントの種類含む）が `screen-design.md` と一致しているか
 - [ ] 機能要件（`functional-requirements.md`）を満たす実装になっているか
 
