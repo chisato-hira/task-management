@@ -259,11 +259,10 @@ export default function Board() {
       {showBulkDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <h3 className="text-base font-bold text-gray-800 mb-2">完了タスクの一括削除</h3>
-            <p className="text-sm text-gray-600 mb-1">
-              完了済みのタスク <span className="font-bold text-gray-800">{tasks.filter(t => t.status === 'DONE').length} 件</span>をすべて削除しますか？
+            <p className="text-base font-bold text-gray-800 mb-3">
+              完了済みの <span className="text-red-500">{tasks.filter(t => t.status === 'DONE').length} 件</span>をすべて削除しますか？
             </p>
-            <p className="text-xs text-red-500 mt-2 mb-5">この操作は取り消せません。</p>
+            <p className="text-xs text-red-500 mb-5">この操作は取り消せません。</p>
             {bulkDeleteError && (
               <p className="text-sm text-red-500 mb-3">{bulkDeleteError}</p>
             )}

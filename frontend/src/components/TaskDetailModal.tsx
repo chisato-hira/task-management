@@ -254,9 +254,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-60">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
-            <h3 className="text-base font-bold text-gray-800 mb-2">タスクの削除</h3>
-            <p className="text-sm text-gray-600 mb-1">以下のタスクを削除しますか？</p>
-            <p className="text-sm font-medium text-gray-800 bg-gray-50 rounded-lg px-3 py-2 mb-4">「{task.title}」</p>
+            <p className="text-base font-bold text-gray-800 mb-3">「{task.title}」を削除しますか？</p>
             <p className="text-xs text-red-500 mb-5">この操作は取り消せません。</p>
             <div className="flex justify-end gap-3">
               <button
