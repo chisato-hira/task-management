@@ -179,8 +179,8 @@ controller → service → repository → DB
 ```
 
 - **controller**: HTTP リクエストを受け取り、service を呼ぶ。パスパラメータ型は Enum を直接受け取る（Spring が自動変換）
-- **service**: ビジネスロジック。現状は repository の薄いラッパー
-- **repository**: Spring Data JPA。カスタムメソッドは `findByStatusOrderByPositionAsc(TaskStatus)` のみ
+- **service**: ビジネスロジック。`create()` ではステータス未指定時に `TODO` をデフォルト値にする処理と、同ステータス内の末尾に追加するための `position` 自動採番を行う
+- **repository**: Spring Data JPA。カスタムメソッドは `findByStatusOrderByPositionAsc(TaskStatus)` と、`@Query` を使った `findMaxPositionByStatus(TaskStatus)`（position の最大値取得）の2つ
 - **entity**: `Task.java` — status は `TaskStatus` Enum、priority は `TaskPriority` Enum で管理。`@Enumerated(EnumType.STRING)` により DB には文字列で保存
 
 ### Enum 型
