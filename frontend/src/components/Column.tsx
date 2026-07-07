@@ -22,9 +22,10 @@ export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTas
       <div className="flex items-center gap-2 mb-2">
         <span className={`w-3 h-3 rounded-full ${columnDef.headerColor}`} />
         <h2 className="font-semibold text-gray-700 text-sm">{columnDef.label}</h2>
-        <span className="ml-auto bg-white/70 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
+        <span className="bg-white/70 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
           {tasks.length}
         </span>
+        <div className="ml-auto" />
         {columnDef.status === 'DONE' && tasks.length > 0 && (
           <button
             onClick={onBulkDeleteClick}
