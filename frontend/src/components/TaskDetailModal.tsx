@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Task, TaskStatus, TaskPriority } from '../types/Task'
 import { updateTask, deleteTask, TaskApiError } from '../api/taskApi'
+import { formatDate } from '../utils/date'
 
 interface TaskDetailModalProps {
   task: Task
@@ -54,6 +55,15 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldsVisible, setFieldsVisible] = useState(true)
+
+  const switchMode = (nextEditing: boolean) => {
+    setFieldsVisible(false)
+    setTimeout(() => {
+      setIsEditing(nextEditing)
+      setFieldsVisible(true)
+    }, 120)
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -121,7 +131,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
         </div>
 
         {/* 各項目 */}
-        <div className="flex flex-col gap-3">
+        <div className={`flex flex-col gap-3 transition-opacity duration-150 ${fieldsVisible ? 'opacity-100' : 'opacity-0'}`}>
           {/* 説明 */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">説明</label>
@@ -191,7 +201,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
               />
             ) : (
               <p className="text-sm text-gray-700">
-                {task.dueDate || <span className="text-gray-400">未設定</span>}
+                {task.dueDate ? formatDate(task.dueDate) : <span className="text-gray-400">未設定</span>}
               </p>
             )}
           </div>
@@ -218,7 +228,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
             {isEditing ? (
               <>
                 <button
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => switchMode(false)}
                   disabled={saving}
                   className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-40"
                 >
@@ -241,7 +251,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
                   閉じる
                 </button>
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => switchMode(true)}
                   className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600"
                 >
                   編集する
