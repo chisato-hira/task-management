@@ -53,7 +53,7 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [error, setError]   = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -102,36 +102,26 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-lg w-full max-w-md p-6"
+        className="bg-white rounded-xl shadow-lg w-full max-w-md p-5"
         onClick={e => e.stopPropagation()}
       >
-        {/* ヘッダー */}
-        <div className="flex items-start justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800 flex-1 pr-2">
-            {isEditing ? (
-              <input
-                type="text"
-                maxLength={255}
-                value={values.title}
-                onChange={e => setValues({ ...values, title: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            ) : (
-              task.title
-            )}
-          </h2>
-          {!isEditing && (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="shrink-0 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
-            >
-              編集する
-            </button>
+        {/* タイトル */}
+        <div className="mb-3">
+          {isEditing ? (
+            <input
+              type="text"
+              maxLength={255}
+              value={values.title}
+              onChange={e => setValues({ ...values, title: e.target.value })}
+              className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          ) : (
+            <h2 className="text-lg font-bold text-gray-800">{task.title}</h2>
           )}
         </div>
 
         {/* 各項目 */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {/* 説明 */}
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">説明</label>
@@ -212,15 +202,19 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
         )}
 
         {/* フッターボタン */}
-        <div className="flex justify-between items-center mt-5">
+        <div className="flex items-center mt-4">
           <button
             onClick={() => setShowDeleteConfirm(true)}
             disabled={saving || deleting}
-            className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-40"
+            className="flex items-center gap-1 text-sm text-red-400 hover:text-red-600 disabled:opacity-40 transition-colors"
           >
-            削除する
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            削除
           </button>
-          <div className="flex gap-3">
+
+          <div className="ml-auto flex gap-2">
             {isEditing ? (
               <>
                 <button
@@ -239,12 +233,20 @@ export default function TaskDetailModal({ task, onClose, onUpdated, onDeleted }:
                 </button>
               </>
             ) : (
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                閉じる
-              </button>
+              <>
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  閉じる
+                </button>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="px-4 py-2 text-sm text-white bg-indigo-500 rounded-lg hover:bg-indigo-600"
+                >
+                  編集する
+                </button>
+              </>
             )}
           </div>
         </div>
