@@ -42,7 +42,19 @@ export default function Board() {
   const [bulkDeleting, setBulkDeleting] = useState(false)
   const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
   const originalTasksRef = useRef<Task[]>([])
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => setToastMessage(null), 2500)
+  }
+
+  useEffect(() => {
+    if (!actionError) return
+    const timer = setTimeout(() => setActionError(null), 5000)
+    return () => clearTimeout(timer)
+  }, [actionError])
 
   const sortTasks = (columnTasks: Task[], sortMode: SortMode): Task[] => {
     if (sortMode === 'priority') {
@@ -204,6 +216,7 @@ export default function Board() {
   }
 
   return (
+    <>
     <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       {actionError && (
         <div className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-600">
@@ -243,7 +256,7 @@ export default function Board() {
         <CreateTaskModal
           defaultStatus={addingToStatus}
           onClose={() => setAddingToStatus(null)}
-          onCreated={() => { setAddingToStatus(null); load() }}
+          onCreated={() => { setAddingToStatus(null); load(); showToast('タスクを作成しました') }}
         />
       )}
 
@@ -251,8 +264,8 @@ export default function Board() {
         <TaskDetailModal
           task={selectedTask}
           onClose={() => setSelectedTask(null)}
-          onUpdated={() => { setSelectedTask(null); load() }}
-          onDeleted={() => { setSelectedTask(null); load() }}
+          onUpdated={() => { setSelectedTask(null); load(); showToast('保存しました') }}
+          onDeleted={() => { setSelectedTask(null); load(); showToast('削除しました') }}
         />
       )}
 
@@ -286,5 +299,15 @@ export default function Board() {
         </div>
       )}
     </DndContext>
+
+    {toastMessage && (
+      <div className="fixed bottom-6 right-6 flex items-center gap-2 bg-gray-800 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        {toastMessage}
+      </div>
+    )}
+    </>
   )
 }

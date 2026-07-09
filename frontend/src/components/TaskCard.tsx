@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Task } from '../types/Task'
+import { formatDate } from '../utils/date'
 
 interface TaskCardProps {
   task: Task
@@ -11,11 +12,6 @@ const priorityConfig = {
   HIGH:   { label: '高', className: 'bg-red-100 text-red-700' },
   MEDIUM: { label: '中', className: 'bg-yellow-100 text-yellow-700' },
   LOW:    { label: '低', className: 'bg-blue-100 text-blue-700' },
-}
-
-function formatDate(dateStr: string): string {
-  const parts = dateStr.split('-')
-  return `${parseInt(parts[1])}/${parseInt(parts[2])}`
 }
 
 function getDueDateStatus(dueDate: string): 'overdue' | 'soon' | null {
