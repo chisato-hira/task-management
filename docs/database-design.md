@@ -11,6 +11,7 @@ erDiagram
         varchar priority "優先度（HIGH / MEDIUM / LOW）"
         date due_date "期限日（任意）"
         varchar status "ステータス（TODO / IN_PROGRESS / DONE）"
+        int position "カラム内の表示順序"
         datetime created_at "作成日時"
         datetime updated_at "更新日時"
     }

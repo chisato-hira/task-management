@@ -195,14 +195,17 @@ controller → service → repository → DB
 ```
 App.tsx
 └── components/
-    ├── Header.tsx     # タイトルバー
-    ├── Board.tsx      # データ取得・状態管理（useEffect + useState）
-    ├── Column.tsx     # カラム（未着手 / 進行中 / 完了）
-    └── TaskCard.tsx   # タスクカード1枚
+    ├── Header.tsx           # タイトルバー
+    ├── Board.tsx            # データ取得・状態管理（useEffect + useState）
+    ├── Column.tsx           # カラム（未着手 / 進行中 / 完了）
+    ├── TaskCard.tsx         # タスクカード1枚
+    ├── CreateTaskModal.tsx  # タスク追加モーダル
+    └── TaskDetailModal.tsx  # タスク詳細・編集モーダル（閲覧/編集の2モード）
 ```
 
 - `src/api/taskApi.ts` — `/api/tasks` へのリクエスト（fetch ベース）
 - `src/types/Task.ts` — バックエンド Entity に対応する TypeScript 型
+- `src/utils/date.ts` — 日付フォーマット共通関数（`M/D` 形式に変換）
 - CORS は `vite.config.ts` の `server.proxy` で回避（バックエンド変更不要）
 
 ### 現在実装済みの API エンドポイント

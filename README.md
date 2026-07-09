@@ -55,8 +55,9 @@ task-management/
 ├── frontend/                 # React + TypeScript（ポート 5173）
 │   ├── src/
 │   │   ├── api/              # taskApi.ts（fetch ベース）
-│   │   ├── components/       # Header / Board / Column / TaskCard
-│   │   └── types/            # Task.ts
+│   │   ├── components/       # Header / Board / Column / TaskCard / CreateTaskModal / TaskDetailModal
+│   │   ├── types/            # Task.ts
+│   │   └── utils/            # date.ts（日付フォーマット）
 │   └── package.json
 ├── docs/                     # 要件・設計ドキュメント
 ├── prototype/                # Vanilla JS の試作 UI（参照用）
