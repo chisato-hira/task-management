@@ -21,9 +21,9 @@ export type SortMode = 'none' | 'priority' | 'dueDate'
 const PRIORITY_ORDER = { HIGH: 0, MEDIUM: 1, LOW: 2 } as const
 
 const COLUMNS: ColumnDef[] = [
-  { status: 'TODO',        label: '未着手', headerColor: 'bg-pink-400',  bgColor: 'bg-pink-50'  },
-  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-sky-500',   bgColor: 'bg-sky-50'   },
-  { status: 'DONE',        label: '完了',   headerColor: 'bg-zinc-400',  bgColor: 'bg-zinc-100' },
+  { status: 'TODO',        label: '未着手', headerColor: 'bg-indigo-400', bgColor: 'bg-indigo-50'  },
+  { status: 'IN_PROGRESS', label: '進行中', headerColor: 'bg-blue-400',   bgColor: 'bg-blue-50'    },
+  { status: 'DONE',        label: '完了',   headerColor: 'bg-zinc-400',   bgColor: 'bg-zinc-100'   },
 ]
 
 export default function Board() {

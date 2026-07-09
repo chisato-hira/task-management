@@ -63,7 +63,7 @@ export default function Column({ columnDef, tasks, sortMode, onToggleSort, onTas
       {columnDef.status === 'TODO' && (
         <button
           onClick={onAddClick}
-          className="mb-2 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-pink-500 bg-white border border-pink-300 rounded-lg hover:bg-pink-50 transition-colors"
+          className="mb-2 w-full flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-indigo-500 bg-white border border-indigo-300 rounded-lg hover:bg-indigo-50 transition-colors"
         >
           <span className="text-base leading-none">+</span> タスクを追加
         </button>
