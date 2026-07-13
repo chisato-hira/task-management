@@ -220,3 +220,11 @@ App.tsx
 | PATCH | `/api/tasks/reorder` | タスクの並び替え |
 | DELETE | `/api/tasks/{id}` | タスク個別削除 |
 | DELETE | `/api/tasks/status/{status}` | ステータス指定で一括削除 |
+
+---
+
+## 11. インフラ構成（AWS）
+
+- 学習目的でAWS上へのデプロイを進めている（EC2インスタンス1台＋RDSの最小構成、東京リージョン想定、Terraformで管理予定）
+- 現時点ではAWSアカウント側の準備のみ完了。実装（`infra/`配下のTerraformコード）はこれから
+- 詳細は [`docs/aws-infrastructure.md`](docs/aws-infrastructure.md) を参照すること
