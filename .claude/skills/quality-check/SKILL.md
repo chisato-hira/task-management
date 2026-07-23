@@ -35,6 +35,20 @@ cd backend
 - コンパイル警告（特に非推奨API・unchecked警告）が出ていないか確認する
 - `./gradlew build` には Checkstyle チェック（`config/checkstyle/checkstyle.xml`、`maxWarnings = 0`）が含まれる。違反があれば `backend/build/reports/checkstyle/main.html` を確認し、内容を個別に判断する
 
+### Terraform
+
+```bash
+cd terraform
+terraform fmt -check -diff
+terraform validate
+```
+
+- `terraform fmt -check` が差分なしであること（フォーマット崩れがないか）
+- `terraform validate` がエラーなしであること（構文・参照エラーがないか）
+- セキュリティグループで `0.0.0.0/0` を許可しているポートがないか確認する（自分のIP等、必要最小限の範囲に絞られているか）
+- 変数定義（`variables.tf`）で、パスワード等の機密情報を扱う変数に `sensitive = true` が付与されているか
+- `.tfvars`・`.tfstate`・SSH秘密鍵などが `.gitignore` で除外されているか（`git status` で追跡対象に入っていないか確認）
+
 ---
 
 ## ステップ2：デファクトスタンダードからの逸脱チェック
@@ -65,6 +79,7 @@ cd backend
 - `docs/screen-design.md`（画面設計書）
 - `docs/tech-stack.md`（技術スタック・APIエンドポイント一覧）
 - `docs/database-design.md`（DB設計書）
+- `docs/aws-infrastructure.md`（AWSインフラ構成）
 
 確認項目：
 
@@ -72,6 +87,9 @@ cd backend
 - [ ] README.md の機能一覧・APIエンドポイント表が実装、および `tech-stack.md` の記載と一致しているか（表記揺れも含む）
 - [ ] 画面のワイヤーフレーム・入力項目（UIコンポーネントの種類含む）が `screen-design.md` と一致しているか
 - [ ] 機能要件（`functional-requirements.md`）を満たす実装になっているか
+- [ ] `database-design.md` のテーブル定義が、実際のEntity（`@Entity`クラスのフィールド・型・制約）と一致しているか
+- [ ] `tech-stack.md` に記載のバージョンが、実際の依存関係（`build.gradle.kts`・`package.json`）と一致しているか
+- [ ] `aws-infrastructure.md` の構成説明が、`terraform/`配下のコードおよび実際にデプロイされている構成と一致しているか
 
 **差異が見つかった場合の対応方針：**
 

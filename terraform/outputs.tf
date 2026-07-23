@@ -4,10 +4,10 @@ output "ec2_public_ip" {
   value       = aws_instance.app.public_ip
 }
 
-# --- アプリのアクセスURL ---
+# --- アプリのアクセスURL(nginx経由のポート80が正式な入口) ---
 output "app_url" {
   description = "アプリへのアクセスURL"
-  value       = "http://${aws_instance.app.public_ip}:8080"
+  value       = "http://${aws_instance.app.public_ip}"
 }
 
 # --- RDSのエンドポイント(接続先ホスト名:ポート) ---

@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 本番用設定(RDSのパスワードを含むため、コミットしない) ###
+src/main/resources/application-prod.yml

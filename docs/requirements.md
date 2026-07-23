@@ -80,3 +80,11 @@ tasks テーブル 1 つで構成し、タスクのタイトル・説明文・�
 フロントエンドに React + TypeScript、バックエンドに Java / Spring Boot、データベースに PostgreSQL を使用する。
 
 詳細は [技術スタック](tech-stack.md) を参照。
+
+---
+
+## 7. インフラ構成（概要）
+
+学習目的でAWS上へのデプロイを行っている（EC2インスタンス1台＋RDSの最小構成、東京リージョン、Terraformで管理）。
+
+詳細は [AWSインフラ構成](aws-infrastructure.md) を参照。

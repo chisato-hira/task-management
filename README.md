@@ -59,6 +59,9 @@ task-management/
 │   │   ├── types/            # Task.ts
 │   │   └── utils/            # date.ts（日付フォーマット）
 │   └── package.json
+├── terraform/                # AWSインフラ定義（VPC・EC2・RDS等）
+├── deploy/                   # EC2上のnginx設定・systemdユニット定義
+├── scripts/                  # デプロイスクリプト（deploy-backend.sh / deploy-frontend.sh）
 ├── docs/                     # 要件・設計ドキュメント
 ├── prototype/                # Vanilla JS の試作 UI（参照用）
 └── docker-compose.yml        # PostgreSQL 定義
@@ -149,3 +152,5 @@ curl -X POST http://localhost:8080/api/tasks \
 | [画面設計書](docs/screen-design.md) | 画面一覧・遷移図・ワイヤーフレーム |
 | [データベース設計書](docs/database-design.md) | ER 図・テーブル定義・インデックス |
 | [技術スタック](docs/tech-stack.md) | 使用技術バージョン・API 詳細仕様 |
+| [AWSインフラ構成](docs/aws-infrastructure.md) | インフラの構成・方針・実装ファイルの場所 |
+| [AWSデプロイ入門ガイド](docs/aws-terraform-guide.md) | AWS/Terraformの用語・手順の学習用ガイド |
