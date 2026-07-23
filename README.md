@@ -135,8 +135,6 @@ Terraformでインフラを構築済みであれば、以下のスクリプト�
 ./scripts/deploy-frontend.sh   # フロントエンドをビルドしてEC2へ配置・nginxへ反映
 ```
 
-インフラ構築の手順は [AWSデプロイ入門ガイド](docs/aws-terraform-guide.md) を参照。
-
 ---
 
 ## API エンドポイント
@@ -184,7 +182,6 @@ curl -X POST http://localhost:8080/api/tasks \
 | [データベース設計書](docs/database-design.md) | ER 図・テーブル定義・インデックス |
 | [技術スタック](docs/tech-stack.md) | 使用技術バージョン・API 詳細仕様 |
 | [AWSインフラ構成](docs/aws-infrastructure.md) | インフラの構成・方針・実装ファイルの場所 |
-| [AWSデプロイ入門ガイド](docs/aws-terraform-guide.md) | AWS/Terraformの用語・手順の学習用ガイド |
 
 ---
 
