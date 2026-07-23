@@ -184,3 +184,16 @@
 リクエスト：なし（`status` は `TODO` / `IN_PROGRESS` / `DONE` のいずれか）
 
 レスポンス：204 No Content（内容なし・削除成功）
+
+---
+
+## 4. インフラ・デプロイ
+
+| カテゴリ | 技術 | バージョン |
+|---|---|---|
+| クラウド | AWS（EC2 + RDS） | — |
+| IaC | Terraform | 1.15.8（aws provider ~> 5.0） |
+| Webサーバー | Nginx | 1.30.3 |
+| プロセス管理 | systemd | 252 |
+
+詳細は [AWSインフラ構成](aws-infrastructure.md) を参照。

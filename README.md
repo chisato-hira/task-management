@@ -59,10 +59,31 @@ task-management/
 │   │   ├── types/            # Task.ts
 │   │   └── utils/            # date.ts（日付フォーマット）
 │   └── package.json
+├── terraform/                # AWSインフラ定義（VPC・EC2・RDS等）
+├── deploy/                   # EC2上のnginx設定・systemdユニット定義
+├── scripts/                  # デプロイスクリプト（deploy-backend.sh / deploy-frontend.sh）
 ├── docs/                     # 要件・設計ドキュメント
 ├── prototype/                # Vanilla JS の試作 UI（参照用）
 └── docker-compose.yml        # PostgreSQL 定義
 ```
+
+---
+
+## インフラ構成
+
+AWS（EC2 + RDS）上に、学習目的でデプロイしている。
+
+```
+ブラウザ → nginx(EC2) → Spring Boot(同一EC2) → RDS(PostgreSQL)
+              │
+              └─ フロントエンド(React)の静的ファイルを配信
+```
+
+- EC2インスタンス1台で、nginx（フロントエンド配信＋APIへのリバースプロキシ）とSpring Bootを同居させている
+- RDSは公開アクセスを無効化し、EC2のセキュリティグループからのみ接続可能
+- インフラはすべてTerraformでコード管理している（`terraform/`）
+
+詳細なアーキテクチャ図・セキュリティ設定・運用方針は [AWSインフラ構成](docs/aws-infrastructure.md) を参照。
 
 ---
 
@@ -102,6 +123,19 @@ npm run dev
 ```
 
 起動確認：http://localhost:5173 をブラウザで開く。
+
+---
+
+## 本番環境へのデプロイ
+
+Terraformでインフラを構築済みであれば、以下のスクリプトでアプリをEC2にデプロイできる。
+
+```bash
+./scripts/deploy-backend.sh    # バックエンドをビルドしてEC2へ配置・再起動
+./scripts/deploy-frontend.sh   # フロントエンドをビルドしてEC2へ配置・nginxへ反映
+```
+
+インフラ構築の手順は [AWSデプロイ入門ガイド](docs/aws-terraform-guide.md) を参照。
 
 ---
 
@@ -149,3 +183,11 @@ curl -X POST http://localhost:8080/api/tasks \
 | [画面設計書](docs/screen-design.md) | 画面一覧・遷移図・ワイヤーフレーム |
 | [データベース設計書](docs/database-design.md) | ER 図・テーブル定義・インデックス |
 | [技術スタック](docs/tech-stack.md) | 使用技術バージョン・API 詳細仕様 |
+| [AWSインフラ構成](docs/aws-infrastructure.md) | インフラの構成・方針・実装ファイルの場所 |
+| [AWSデプロイ入門ガイド](docs/aws-terraform-guide.md) | AWS/Terraformの用語・手順の学習用ガイド |
+
+---
+
+## License
+
+[MIT License](LICENSE)
