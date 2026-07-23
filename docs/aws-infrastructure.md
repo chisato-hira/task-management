@@ -90,7 +90,7 @@
 
 | 場所 | 役割 |
 |---|---|
-| `terraform/` | インフラそのもの（VPC・EC2・RDS・セキュリティグループ等）をコードで定義。概念・用語は[Terraformガイド](aws-terraform-guide.md)を参照 |
+| `terraform/` | インフラそのもの（VPC・EC2・RDS・セキュリティグループ等）をコードで定義 |
 | `deploy/nginx/` | EC2上のnginx設定（静的配信・リバースプロキシ） |
 | `deploy/systemd/` | バックエンドを常時稼働させるsystemdユニット定義 |
 | `scripts/deploy-backend.sh` | バックエンドのビルド・EC2への配置・再起動を行うデプロイスクリプト |
