@@ -225,6 +225,7 @@ App.tsx
 
 ## 11. インフラ構成（AWS）
 
-- 学習目的でAWS上へのデプロイを進めている（EC2インスタンス1台＋RDSの最小構成、東京リージョン想定、Terraformで管理予定）
-- 現時点ではAWSアカウント側の準備のみ完了。実装（`terraform/`配下のTerraformコード）はこれから
+- 学習目的でAWS上へのデプロイを行った（EC2インスタンス1台＋RDSの最小構成、東京リージョン、Terraformで管理）
+- Terraformによるインフラ構築（VPC・EC2・RDS）・アプリのデプロイ・動作確認まで完了済み
+- 現在は `terraform destroy` により環境を停止中（無料利用枠・クレジットの浪費を防ぐため）。再構築する場合は `terraform/` 配下のコードを `terraform apply` すれば同じ構成を再現できる
 - 詳細は [`docs/aws-infrastructure.md`](docs/aws-infrastructure.md) を参照すること
